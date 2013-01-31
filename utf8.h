@@ -168,11 +168,11 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 
 /* Is the representation of the Unicode code point 'c' the same regardless of
  * being encoded in UTF-8 or not? */
-#define UNI_IS_INVARIANT(c)		(((UV)c) <  0x80)
+#define UNI_IS_INVARIANT(c)		(LIKELY(((UV)c) <  0x80))
 
 /* Is the UTF8-encoded byte 'c' part of a variant sequence in UTF-8?  This is
  * the inverse of UTF8_IS_INVARIANT */
-#define UTF8_IS_CONTINUED(c) 		(((U8)c) &  0x80)
+#define UTF8_IS_CONTINUED(c) 		(UNLIKELY(((U8)c) &  0x80))
 
 /* Is the byte 'c' the first byte of a multi-byte UTF8-8 encoded sequence?
  * This doesn't catch invariants (they are single-byte).  It also excludes the
@@ -191,7 +191,7 @@ Perl's extended UTF-8 means we can have start bytes up to FF.
 
 /* Is the UTF8-encoded byte 'c' the first byte of a sequence of bytes that
  * represent a code point > 255? */
-#define UTF8_IS_ABOVE_LATIN1(c)	((U8)(c) >= 0xc4)
+#define UTF8_IS_ABOVE_LATIN1(c)	(UNLIKELY((U8)(c) >= 0xc4))
 
 /* This defines the 1-bits that are to be in the first byte of a multi-byte
  * UTF-8 encoded character that give the number of bytes that comprise the

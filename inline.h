@@ -35,7 +35,7 @@ S_ReANY(const REGEXP * const re)
 PERL_STATIC_INLINE SV *
 S_SvREFCNT_inc(SV *sv)
 {
-    if (sv)
+    if (LIKELY(sv != NULL))
 	SvREFCNT(sv)++;
     return sv;
 }
@@ -48,13 +48,13 @@ S_SvREFCNT_inc_NN(SV *sv)
 PERL_STATIC_INLINE void
 S_SvREFCNT_inc_void(SV *sv)
 {
-    if (sv)
+    if (LIKELY(sv != NULL))
 	SvREFCNT(sv)++;
 }
 PERL_STATIC_INLINE void
 S_SvREFCNT_dec(pTHX_ SV *sv)
 {
-    if (sv) {
+    if (LIKELY(sv != NULL)) {
 	U32 rc = SvREFCNT(sv);
 	if (rc > 1)
 	    SvREFCNT(sv) = rc - 1;

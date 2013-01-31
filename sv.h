@@ -311,7 +311,7 @@ perform the upgrade if necessary.  See C<svtype>.
 #define SvREFCNT_inc_void(sv)		S_SvREFCNT_inc_void(MUTABLE_SV(sv))
 
 /* These guys don't need the curly blocks */
-#define SvREFCNT_inc_simple_void(sv)	STMT_START { if (sv) SvREFCNT(sv)++; } STMT_END
+#define SvREFCNT_inc_simple_void(sv)	STMT_START { if (LIKELY(sv)) SvREFCNT(sv)++; } STMT_END
 #define SvREFCNT_inc_simple_NN(sv)	(++(SvREFCNT(sv)),MUTABLE_SV(sv))
 #define SvREFCNT_inc_void_NN(sv)	(void)(++SvREFCNT(MUTABLE_SV(sv)))
 #define SvREFCNT_inc_simple_void_NN(sv)	(void)(++SvREFCNT(MUTABLE_SV(sv)))
@@ -1332,7 +1332,7 @@ sv_force_normal does nothing.
 #define SvPV_free(sv)							\
     STMT_START {							\
 		     assert(SvTYPE(sv) >= SVt_PV);			\
-		     if (SvLEN(sv)) {					\
+		     if (LIKELY(SvLEN(sv))) {				\
 			 assert(!SvROK(sv));				\
 			 if(SvOOK(sv)) {				\
 			     STRLEN zok; 				\
@@ -1460,12 +1460,12 @@ attention to precisely which outputs are influenced by which inputs.
 #else
 #   define SvTAINTED(sv)	  (SvMAGICAL(sv) && sv_tainted(sv))
 #endif
-#define SvTAINTED_on(sv)  STMT_START{ if(TAINTING_get){sv_taint(sv);}   }STMT_END
-#define SvTAINTED_off(sv) STMT_START{ if(TAINTING_get){sv_untaint(sv);} }STMT_END
+#define SvTAINTED_on(sv)  STMT_START{ if(UNLIKELY(TAINTING_get)){sv_taint(sv);}   }STMT_END
+#define SvTAINTED_off(sv) STMT_START{ if(UNLIKELY(TAINTING_get)){sv_untaint(sv);} }STMT_END
 
 #define SvTAINT(sv)			\
     STMT_START {			\
-	if (TAINTING_get) {		\
+	if (UNLIKELY(TAINTING_get)) {	\
 	    if (TAINT_get)		\
 		SvTAINTED_on(sv);	\
 	}				\
@@ -1845,7 +1845,7 @@ Like sv_utf8_upgrade, but doesn't do magic on C<sv>.
    the effort of making a read-write copy only for it to get immediately
    discarded.  */
 
-#define SV_CHECK_THINKFIRST_COW_DROP(sv) if (SvTHINKFIRST(sv)) \
+#define SV_CHECK_THINKFIRST_COW_DROP(sv) if (UNLIKELY(SvTHINKFIRST(sv))) \
 				    sv_force_normal_flags(sv, SV_COW_DROP_PV)
 
 #ifdef PERL_OLD_COPY_ON_WRITE
@@ -1889,7 +1889,7 @@ mg.c:1024: warning: left-hand operand of comma expression has no effect
 
 #define CAN_COW_FLAGS	(SVp_POK|SVf_POK)
 
-#define SV_CHECK_THINKFIRST(sv) if (SvTHINKFIRST(sv)) \
+#define SV_CHECK_THINKFIRST(sv) if (UNLIKELY(SvTHINKFIRST(sv))) \
 				    sv_force_normal_flags(sv, 0)
 
 
@@ -2029,7 +2029,7 @@ alternative is to call C<sv_grow> if you are not sure of the type of SV.
 #define SvDESTROYABLE(sv) PL_destroyhook(aTHX_ sv)
 
 #define SvGETMAGIC(x) ((void)(SvGMAGICAL(x) && mg_get(x)))
-#define SvSETMAGIC(x) STMT_START { if (SvSMAGICAL(x)) mg_set(x); } STMT_END
+#define SvSETMAGIC(x) STMT_START { if (UNLIKELY(SvSMAGICAL(x))) mg_set(x); } STMT_END
 
 #define SvSetSV_and(dst,src,finally) \
 	STMT_START {					\
@@ -2110,12 +2110,12 @@ See also C<PL_sv_yes> and C<PL_sv_no>.
 
 #ifdef PERL_NEW_COPY_ON_WRITE
 # define SvGROW(sv,len) \
-	(SvIsCOW(sv) || SvLEN(sv) < (len) ? sv_grow(sv,len) : SvPVX(sv))
+	(UNLIKELY(SvIsCOW(sv) || SvLEN(sv) < (len)) ? sv_grow(sv,len) : SvPVX(sv))
 #else
-# define SvGROW(sv,len) (SvLEN(sv) < (len) ? sv_grow(sv,len) : SvPVX(sv))
+# define SvGROW(sv,len) (UNLIKELY(SvLEN(sv) < (len)) ? sv_grow(sv,len) : SvPVX(sv))
 #endif
 #define SvGROW_mutable(sv,len) \
-    (SvLEN(sv) < (len) ? sv_grow(sv,len) : SvPVX_mutable(sv))
+    (UNLIKELY(SvLEN(sv) < (len)) ? sv_grow(sv,len) : SvPVX_mutable(sv))
 #define Sv_Grow sv_grow
 
 #define CLONEf_COPY_STACKS 1
