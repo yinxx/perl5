@@ -126,6 +126,7 @@
 #define PL_delaymagic_gid	(vTHX->Idelaymagic_gid)
 #define PL_delaymagic_uid	(vTHX->Idelaymagic_uid)
 #define PL_destroyhook		(vTHX->Idestroyhook)
+#define PL_destructcb		(vTHX->Idestructcb)
 #define PL_diehook		(vTHX->Idiehook)
 #define PL_doswitches		(vTHX->Idoswitches)
 #define PL_dowarn		(vTHX->Idowarn)

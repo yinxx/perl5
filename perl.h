@@ -4776,6 +4776,7 @@ struct perl_debug_pad {
 
 /* Enable variables which are pointers to functions */
 typedef void (*peep_t)(pTHX_ OP* o);
+typedef void (*destructcb_t)(pTHX);
 typedef regexp* (*regcomp_t) (pTHX_ char* exp, char* xend, PMOP* pm);
 typedef I32     (*regexec_t) (pTHX_ regexp* prog, char* stringarg,
 				      char* strend, char* strbeg, I32 minend,

@@ -1252,6 +1252,10 @@ perl_destruct(pTHXx)
 	Safefree(s);
     }
 
+    /* Invoke C level callback for XS modules' cleanup of non-Perl assets */
+    if (PL_destructcb != NULL)
+        (*PL_destructcb)(aTHX);
+
     /* As the absolutely last thing, free the non-arena SV for mess() */
 
     if (PL_mess_sv) {

@@ -775,6 +775,40 @@ PERLVARI(I, xmlfp,	PerlIO *, NULL)
 PERLVARI(I, sv_serial,	U32,	0)	/* SV serial number, used in sv.c */
 #endif
 
+/*
+=for apidoc Amn|destructcb_t|PL_destructcb
+
+A C level interpreter destruction callback that will be invoked very close
+to the end of the interpreter lifetime, long after all Perl code has
+finished execution.  This can be used by extensions that wish to clean up
+knowing that the given interpreter will not be used to execute Perl code
+again.
+
+The content of C<PL_destructcb> should never be completely replaced.
+Rather, add code to it by wrapping the existing callback.  The basic way
+to do this is to take a local copy of the original callback (which may be
+NULL) and only then installing yours into C<PL_destructcb>.  Within
+your callback function, you then invoke the original callback which you
+copied (if it's not NULL).  This strategy is explained with an example
+in the optimizer section of L<perlguts>.
+
+Expect your callback to be invoked once per Perl thread that's being
+destroyed.  In other words: Your callback will be copied verbatim per
+thread.  An example callback could be:
+
+  void my_destructcb(pTHX) {
+    free(my_static_memory);
+  }
+
+But that can cause problems if your C<my_static_memory> memory is also in
+use by other Perl ithreads.  For details on how to make this thread-safe,
+refer to L<perlmod/Making your module threadsafe>.
+
+=cut
+*/
+
+PERLVARI(I, destructcb,	destructcb_t, NULL)
+
 /* If you are adding a U8 or U16, check to see if there are 'Space' comments
  * above on where there are gaps which currently will be structure padding.  */
 

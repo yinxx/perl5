@@ -1124,6 +1124,12 @@ my_ck_rv2cv(pTHX_ OP *o)
     return old_ck_rv2cv(aTHX_ o);
 }
 
+void
+apitest_destruct_callback(pTHX)
+{
+    printf("DESTRUCT CALLBACK\n");
+}
+
 #include "const-c.inc"
 
 MODULE = XS::APItest		PACKAGE = XS::APItest
@@ -3039,6 +3045,11 @@ rpeep_record ()
 	RETVAL = newRV_inc((SV *)MY_CXT.rpeep_recorder);
     OUTPUT:
 	RETVAL
+
+void
+enable_destruct_callback()
+  CODE:
+    apitest_destruct_callback(aTHX);
 
 =pod
 
