@@ -349,6 +349,11 @@ use File::Glob qw(:case);
         ],
     },
 
+	'Devel::FindPerl' => {
+		'FILES'        => q[cpan/Devel-FindPerl],
+        'DISTRIBUTION' => 'MHX/Devel-FindPerl-0.009.tar.gz',
+	},
+
     'Devel::PPPort' => {
         'DISTRIBUTION' => 'MHX/Devel-PPPort-3.21.tar.gz',
         # RJBS has asked MHX to have UPSTREAM be 'blead'
