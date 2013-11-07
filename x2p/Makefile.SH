@@ -79,8 +79,8 @@ cat >>Makefile <<'!NO!SUBS!'
 REALPERL = ../perl
 CCCMD = `sh $(shellflags) ../cflags "optimize='$(OPTIMIZE)'" $@`
 
-pl = find2perl.PL s2p.PL
-plextract = find2perl s2p
+pl = s2p.PL
+plextract = s2p
 
 h = EXTERN.h INTERN.h ../config.h ../handy.h hash.h a2p.h str.h util.h
 
@@ -94,7 +94,7 @@ lintflags = -phbvxac
 .c$(OBJ_EXT):
 	$(CCCMD) -DPERL_FOR_X2P $*.c
 
-all: a2p$(EXE_EXT) s2p find2perl
+all: a2p$(EXE_EXT) s2p
 	@echo " "
 
 a2p$(EXE_EXT): $(obj) a2p$(OBJ_EXT)
@@ -164,8 +164,6 @@ hlist:
 
 $(plextract):
 	$(RUN) $(PERL) -I../lib $@.PL
-
-find2perl: find2perl.PL ../config.sh
 
 s2p: s2p.PL ../config.sh
 

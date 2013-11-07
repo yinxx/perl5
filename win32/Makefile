@@ -622,7 +622,6 @@ UTILS		=			\
 		..\utils\instmodsh	\
 		..\utils\json_pp	\
 		..\utils\pod2html	\
-		..\x2p\find2perl	\
 		..\x2p\psed		\
 		..\x2p\s2p		\
 		bin\exetype.pl		\
@@ -1035,7 +1034,6 @@ $(PERLEXE_RES): perlexe.rc $(PERLEXE_MANIFEST) $(PERLEXE_ICO)
 	$(CC) -I..\x2p  $(CFLAGS) $(OBJOUT_FLAG)$@ -c ..\x2p\walk.c
 
 $(X2P) : $(MINIPERL) $(X2P_OBJ) Extensions
-	$(MINIPERL) -I..\lib ..\x2p\find2perl.PL
 	$(MINIPERL) -I..\lib ..\x2p\s2p.PL
 	$(LINK32) -subsystem:console -out:$@ @<<
 		$(LINK_FLAGS) $(LIBFILES) $(X2P_OBJ)
@@ -1272,7 +1270,7 @@ distclean: realclean
 	-cd ..\utils && del /f h2ph splain perlbug pl2pm c2ph pstruct h2xs \
 	    perldoc perlivp libnetcfg enc2xs piconv cpan *.bat \
 	    xsubpp pod2html instmodsh json_pp prove ptar ptardiff ptargrep shasum corelist config_data zipdetails
-	-cd ..\x2p && del /f find2perl s2p psed *.bat
+	-cd ..\x2p && del /f s2p psed *.bat
 	-del /f ..\config.sh perlmain.c dlutils.c config.h.new \
 	        perlmainst.c
 	-del /f $(CONFIGPM)

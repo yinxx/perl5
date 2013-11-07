@@ -5,29 +5,27 @@
 # This doesn't currently test -exec etc, just the default -print on
 # the platforms below.
 
-BEGIN {
-    chdir 't' if -d 't';
-    @INC = ( '../lib' );
-}
-
 use strict;
 use warnings;
 use File::Path 'remove_tree';
-use File::Spec;
-require "./test.pl";
+use File::Basename 'dirname';
+use File::Spec::Functions qw/catfile catdir curdir/;
+use File::Temp qw/mktemp tempdir/;
+use Test::More;
+
+use Devel::FindPerl 0.009 qw/find_perl_interpreter/;
+use IPC::Open2;
 
 # add more platforms if you feel like it, but make sure the
 # tests below are portable to the find(1) for any new platform,
 # or that they skip on that platform
 $^O =~ /^(?:linux|\w+bsd|darwin)$/
-    or skip_all("Need something vaguely POSIX");
+    or plan(skip_all => "Need something vaguely POSIX");
 
 my $VERBOSE = grep $_ eq '-v', @ARGV;
 
-my $tmpdir = tempfile();
-my $script = tempfile();
-mkdir $tmpdir
-    or die "Cannot make temp dir $tmpdir: $!";
+my $tmpdir = tempdir();
+my $script = mktemp('tempXXXXX');
 
 # test file names shouldn't contain any shell special characters,
 # and for portability, probably shouldn't contain any high ascii or
@@ -62,7 +60,7 @@ my @test_files =
     );
 # make some files to search
 for my $spec (@test_files) {
-    my $file = File::Spec->catfile($tmpdir, split '/', $spec->{name});
+    my $file = catfile($tmpdir, split '/', $spec->{name});
     my $type = $spec->{type} || "f";
     if ($type eq "f") {
         open my $fh, ">", $file
@@ -79,12 +77,12 @@ for my $spec (@test_files) {
             or die "Cannot create test directory $file: $!";
     }
     elsif ($type eq "l") {
-        my $target = File::Spec->catfile($tmpdir, split '/', $spec->{target});
+        my $target = catfile($tmpdir, split '/', $spec->{target});
         link $target, $file
             or die "Cannot create test link $file: $!";
     }
     elsif ($type eq "s") {
-        my $target = File::Spec->catfile($tmpdir, split '/', $spec->{target});
+        my $target = catfile($tmpdir, split '/', $spec->{target});
         symlink $target, $file
             or die "Cannot create test symlink $file: $!";
     }
@@ -152,7 +150,7 @@ my @testcases =
         },
     );
 
-my $find2perl = File::Spec->catfile(File::Spec->updir(), "x2p", "find2perl");
+my $find2perl = catfile(curdir(), qw/blib script find2perl/);
 our $TODO;
 plan(tests => scalar @testcases);
 for my $test (@testcases) {
@@ -217,4 +215,17 @@ for my $test (@testcases) {
 
 END {
     remove_tree($tmpdir);
+	remove_tree($script);
+}
+
+sub runperl {
+	my %args = @_;
+	my @args = find_perl_interpreter();
+	push @args, $args{progfile} if $args{progfile};
+	push @args, @{ $args{args} } if $args{args};
+	my $pid = open2(my ($in, $out), @args) or die "Can't open2: $!";
+	binmode $in, ':crlf' if $^O eq 'MSWin32';
+	my $ret = do { local $/; <$in> };
+	waitpid $pid, 0;
+	return $ret;
 }

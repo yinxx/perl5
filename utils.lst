@@ -8,6 +8,7 @@ utils/cpan
 utils/config_data
 utils/corelist
 utils/enc2xs
+utils/find2perl
 utils/h2ph
 utils/h2xs
 utils/instmodsh
@@ -28,5 +29,4 @@ utils/splain
 utils/xsubpp
 utils/zipdetails
 x2p/a2p
-x2p/find2perl
 x2p/s2p         # link = x2p/psed

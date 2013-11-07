@@ -2796,6 +2796,9 @@ Cross/warp			Cross-compilation
 cv.h				Code value header
 cygwin/cygwin.c			Additional code for Cygwin port
 deb.c				Debugging routines
+dist/App-find2perl/Makefile.PL	MakeMaker for find2perl
+dist/App-find2perl/script/find2perl	A find to perl translator
+dist/App-find2perl/t/find2perl.t	Test find2perl
 dist/Attribute-Handlers/Changes				Attribute::Handlers
 dist/Attribute-Handlers/demo/demo2.pl			Attribute::Handlers demo
 dist/Attribute-Handlers/demo/demo3.pl			Attribute::Handlers demo
@@ -5414,7 +5417,6 @@ t/win32/runenv.t		Test if Win* perl honors its env variables
 t/win32/signal.t		Test Win32 signal emulation
 t/win32/system.t		See if system works in Win*
 t/win32/system_tests		Test runner for system.t
-t/x2p/find2perl.t		Test find2perl
 t/x2p/s2p.t			See if s2p/psed work
 uconfig64.sh			Configuration script for microperl for LP64
 uconfig.h			Configuration header for microperl
@@ -5432,6 +5434,7 @@ utils/config_data.PL		Module::Build tool
 utils/corelist.PL		Module::CoreList
 utils/cpan.PL			easily interact with CPAN from the command line
 utils/enc2xs.PL			Encode module generator
+utils/find2perl.PL	Convert find into perl
 utils/h2ph.PL			A thing to turn C .h files into perl .ph files
 utils/h2xs.PL			Program to make .xs files from C header files
 utils/instmodsh.PL		Give information about installed extensions
@@ -5535,7 +5538,6 @@ x2p/a2p.pod			Pod for awk to perl translator
 x2p/a2p.y			A yacc grammar for awk
 x2p/a2py.c			Awk compiler, sort of
 x2p/EXTERN.h			Same as above
-x2p/find2perl.PL		A find to perl translator
 x2p/hash.c			Hashes again
 x2p/hash.h			Public declarations for the above
 x2p/INTERN.h			Same as above

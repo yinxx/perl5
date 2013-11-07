@@ -619,9 +619,6 @@ translators:	$x2p_deps
 x2p/s2p: $x2p_deps
 	cd x2p; \$(LDLIBPTH) \$(MAKE) s2p
 
-x2p/find2perl: $x2p_deps
-	cd x2p; \$(LDLIBPTH) \$(MAKE) find2perl
-
 utils/Makefile: \$(MINIPERL_EXE) \$(CONFIGPM) utils/Makefile.PL
 	\$(MINIPERL) -Ilib utils/Makefile.PL
 
@@ -1335,7 +1332,7 @@ _test:
 test_prep_pre: preplibrary utilities $(nonxs_ext)
 
 test_prep test-prep: test_prep_pre $(MINIPERL_EXE) $(unidatafiles) $(PERL_EXE) \
-	$(dynamic_ext) $(TEST_PERL_DLL) runtests x2p/s2p x2p/find2perl \
+	$(dynamic_ext) $(TEST_PERL_DLL) runtests x2p/s2p \
 	$(generated_pods)
 	cd t && (rm -f $(PERL_EXE); $(LNS) ../$(PERL_EXE) $(PERL_EXE))
 

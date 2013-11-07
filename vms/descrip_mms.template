@@ -287,6 +287,7 @@ utils2 = [.utils]h2xs.com [.utils]libnetcfg.com [.lib]perlbug.com [.utils]json_p
 utils3 = [.utils]perlivp.com [.lib]splain.com [.utils]pl2pm.com [.utils]xsubpp.com [.utils]pod2html.com [.utils]instmodsh.com
 utils4 = [.utils]enc2xs.com [.utils]piconv.com [.utils]cpan.com [.utils]prove.com [.utils]ptar.com [.utils]ptardiff.com [.utils]shasum.com
 utils5 = [.utils]corelist.com [.utils]config_data.com [.utils]ptargrep.com [.utils]zipdetails.com
+utils6 = [.utils]find2perl.com
 
 .ifdef NOX2P
 all : base extras archcorefiles preplibrary [.pod]perltoc.pod
@@ -311,9 +312,9 @@ extras : dynext libmods utils extra.pods
 	@ $(NOOP)
 libmods : $(LIBPREREQ)
 	@ $(NOOP)
-utils : $(utils1) $(utils2) $(utils3) $(utils4) $(utils5)
+utils : $(utils1) $(utils2) $(utils3) $(utils4) $(utils5) $(utils6)
 	@ $(NOOP)
-x2p : [.x2p]$(DBG)a2p$(E) [.x2p]s2p.com [.x2p]find2perl.com 
+x2p : [.x2p]$(DBG)a2p$(E) [.x2p]s2p.com
 	@ $(NOOP)
 extra.pods : miniperl
 	@ @extra_pods.com
@@ -513,7 +514,7 @@ nonxsext : $(LIBPREREQ) preplibrary $(MINIPERL_EXE) [.pod]perlfunc.pod
 	$(MINIPERL) -"I[-.lib]" $(MMS$SOURCE)
 	Copy/NoConfirm/Log [.utils]splain.com [.lib]
 
-[.x2p]find2perl.com : [.x2p]find2perl.PL $(ARCHDIR)Config.pm
+[.utils]find2perl.com : [.x2p]find2perl.PL $(ARCHDIR)Config.pm
 	$(MINIPERL) -"I[-.lib]" $(MMS$SOURCE)
 
 [.x2p]s2p.com : [.x2p]s2p.PL $(ARCHDIR)Config.pm
