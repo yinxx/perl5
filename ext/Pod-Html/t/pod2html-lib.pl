@@ -65,7 +65,7 @@ sub convert_n_test {
 	    $expect =~ s/item_mat_3c_21_3e/item_mat_4c_5a_6e/;
 	}
     if (Pod::Simple->VERSION > 3.28) {
-        $expect =~ s/\n\nsome html/$1/m;
+        $expect =~ s/\n\n(some html)/$1/m;
         $expect =~ s{(TESTING FOR AND BEGIN</h1>)\n\n}{$1}m;
     }
 
