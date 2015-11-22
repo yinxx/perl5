@@ -85,9 +85,10 @@ if($pid = fork()) {
 
 	print $sock "ok 4\n";
 
+	waitpid($pid,0);
+
 	$sock->close;
 
-	waitpid($pid,0);
 	unlink($PATH) || $^O eq 'os2' || warn "Can't unlink $PATH: $!";
 
 	print "ok 5\n";
