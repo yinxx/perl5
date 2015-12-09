@@ -13600,7 +13600,7 @@ S_handle_regex_sets(pTHX_ RExC_state_t *pRExC_state, SV** return_invlist,
     sv_2mortal((SV *)(fence_stack = newAV()));
 
     while (RExC_parse < RExC_end) {
-        I32 top_index;              /* Index of top-most element in 'stack' */
+        SSize_t top_index;              /* Index of top-most element in 'stack' */
         SV** top_ptr;               /* Pointer to top 'stack' element */
         SV* current = NULL;         /* To contain the current inversion list
                                        operand */
