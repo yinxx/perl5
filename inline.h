@@ -472,6 +472,7 @@ S_cx_topblock(pTHX_ PERL_CONTEXT *cx)
     PL_stack_sp      = PL_stack_base + cx->blk_oldsp;
 }
 
+#ifndef PERL_IN_MINIPERLMAIN_C
 
 PERL_STATIC_INLINE void
 S_cx_pushsub(pTHX_ PERL_CONTEXT *cx, CV *cv, OP *retop, bool hasargs)
@@ -557,6 +558,7 @@ S_cx_popsub(pTHX_ PERL_CONTEXT *cx)
     cx_popsub_common(cx);
 }
 
+#endif
 
 PERL_STATIC_INLINE void
 S_cx_pushformat(pTHX_ PERL_CONTEXT *cx, CV *cv, OP *retop, GV *gv)
