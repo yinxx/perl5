@@ -22,7 +22,7 @@ package Storable; @ISA = qw(Exporter);
 
 use vars qw($canonical $forgive_me $VERSION);
 
-$VERSION = '2.56';
+$VERSION = '2.57';
 
 BEGIN {
     if (eval { local $SIG{__DIE__}; require Log::Agent; 1 }) {
@@ -1122,6 +1122,34 @@ problems when storing large unsigned integers that had never been converted
 to string or floating point.  In other words values that had been generated
 by integer operations such as logic ops and then not used in any string or
 arithmetic context before storing.
+
+=head2 Large data on 64-bit platforms
+
+Storable's current data format is incapable of representing lengths greater
+than fit into a signed 32-bit integer, or about 2 GB. In practice, this
+means that, even with the latest Perl and a 64-bit machine with plenty of
+memory, you cannot store, retrieve, or clone any of the following:
+
+=over 4
+
+=item *
+
+A string containing 2**31 or more bytes (including as an element of an array, or
+a key or value in a hash)
+
+=item *
+
+An array with 2**31 or more elements
+
+=item *
+
+A hash with 2**31 or more keys
+
+=back
+
+Attempting to do so will yield an exception.
+
+This may be fixed in the future.
 
 =head2 64 bit data in perl 5.6.0 and 5.6.1
 
