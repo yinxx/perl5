@@ -1462,7 +1462,11 @@ win32_stat(const char *path, Stat_t *sbuf)
     int		res;
     int         nlink = 1;
     BOOL        expect_dir = FALSE;
+    BOOL    debug_stat = PerlEnv_getenv("DEBUG_STAT") != NULL;
 
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "win32_stat(%s)\n", path);
+    }
     if (l > 1) {
 	switch(path[l - 1]) {
 	/* FindFirstFile() and stat() are buggy with a trailing
@@ -1500,9 +1504,17 @@ win32_stat(const char *path, Stat_t *sbuf)
 	}
     }
 
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "win32_stat after path fixes (%s)\n", path);
+    }
+    
     path = PerlDir_mapA(path);
     l = strlen(path);
 
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "win32_stat after more path fixes (%s)\n", path);
+    }
+    
     if (!w32_sloppystat) {
         /* We must open & close the file once; otherwise file attribute changes  */
         /* might not yet have propagated to "other" hard links of the same file. */
@@ -1532,6 +1544,9 @@ win32_stat(const char *path, Stat_t *sbuf)
 #endif
     sbuf->st_nlink = nlink;
 
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "stat() result %d\n", res);
+    }
     if (res < 0) {
 	/* CRT is buggy on sharenames, so make sure it really isn't.
 	 * XXX using GetFileAttributesEx() will enable us to set
@@ -1545,6 +1560,9 @@ win32_stat(const char *path, Stat_t *sbuf)
 	    errno = 0;
 	    if (!(r & FILE_ATTRIBUTE_READONLY))
 		sbuf->st_mode |= S_IWRITE | S_IEXEC;
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "stat() - but success as share name\n", res);
+    }
 	    return 0;
 	}
     }

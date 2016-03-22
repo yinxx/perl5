@@ -376,7 +376,7 @@ sub _rmtree {
 
             my ( $cur_dev, $cur_inode, $perm ) = ( stat $curdir )[ 0, 1, 2 ]
               or do {
-                _error( $arg, "cannot stat current working directory", $canon );
+                _error( $arg, "cannot stat current working directory '$curdir'", $canon );
                 next ROOT_DIR;
               };
 

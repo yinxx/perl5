@@ -24,6 +24,10 @@ is(mkpath($UNC_path), 2, 'mkpath on Win32 UNC path returns made 2 dir - base and
 
 ok(-d $UNC_path, 'mkpath on Win32 UNC path made dir');
 
+$ENV{DEBUG_STAT} = 1;
+
 my $removed = rmtree($UNC_path);
+
+delete $ENV{DEBUG_STAT};
 
 cmp_ok($removed, '>', 0, "removed $removed entries from $UNC_path");
