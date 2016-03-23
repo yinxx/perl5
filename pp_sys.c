@@ -2873,6 +2873,7 @@ PP(pp_stat)
     U8 gimme;
     I32 max = 13;
     SV* sv;
+    BOOL debug_stat = PerlEnv_getenv("DEBUG_STAT") != NULL;
 
     if (PL_op->op_flags & OPf_REF ? (gv = cGVOP_gv, 1)
                                   : !!(sv=POPs, gv = MAYBE_DEREF_GV(sv))) {
@@ -2934,12 +2935,17 @@ PP(pp_stat)
                 goto do_fstat_warning_check;
             goto do_fstat_have_io; 
         }
-        
+
 	SvTAINTED_off(PL_statname); /* previous tainting irrelevant */
 	sv_setpv(PL_statname, SvPV_nomg_const_nolen(sv));
 	PL_statgv = NULL;
 	PL_laststype = PL_op->op_type;
         file = SvPV_nolen_const(PL_statname);
+        if (debug_stat) {
+#define QQX_(x) #x
+#define QQX(x) QQX_(x)
+            PerlIO_printf(PerlIO_stderr(), "calling stat '%s'\n", PL_op->op_type == OP_LSTAT ? QQX(PerlLIO_lstat(file, &PL_statcache)) : QQX(PerlLIO_stat(file, &PL_statcache)));
+        }
 	if (PL_op->op_type == OP_LSTAT)
 	    PL_laststatval = PerlLIO_lstat(file, &PL_statcache);
 	else

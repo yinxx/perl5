@@ -1462,7 +1462,7 @@ win32_stat(const char *path, Stat_t *sbuf)
     int		res;
     int         nlink = 1;
     BOOL        expect_dir = FALSE;
-    BOOL    debug_stat = PerlEnv_getenv("DEBUG_STAT") != NULL;
+    BOOL    debug_stat = win32_getenv("DEBUG_STAT") != NULL;
 
     if (debug_stat) {
         PerlIO_printf(PerlIO_stderr(), "win32_stat(%s)\n", path);
@@ -1561,10 +1561,13 @@ win32_stat(const char *path, Stat_t *sbuf)
 	    if (!(r & FILE_ATTRIBUTE_READONLY))
 		sbuf->st_mode |= S_IWRITE | S_IEXEC;
     if (debug_stat) {
-        PerlIO_printf(PerlIO_stderr(), "stat() - but success as share name\n", res);
+        PerlIO_printf(PerlIO_stderr(), "stat() - but success as share name\n");
     }
 	    return 0;
 	}
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "stat() - fail as share name\n");
+    }
     }
     else {
 	if (l == 3 && isALPHA(path[0]) && path[1] == ':'
@@ -1572,11 +1575,17 @@ win32_stat(const char *path, Stat_t *sbuf)
 	{
 	    /* The drive can be inaccessible, some _stat()s are buggy */
 	    if (!GetVolumeInformationA(path,NULL,0,NULL,NULL,NULL,NULL,0)) {
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "stat() - fail as bad drive letter\n");
+    }
 		errno = ENOENT;
 		return -1;
 	    }
 	}
         if (expect_dir && !S_ISDIR(sbuf->st_mode)) {
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "stat() - fail as expect_dir\n");
+    }
             errno = ENOTDIR;
             return -1;
         }
@@ -1592,6 +1601,9 @@ win32_stat(const char *path, Stat_t *sbuf)
 		sbuf->st_mode &= ~S_IWRITE;
 	    }
 	}
+    }
+    if (debug_stat) {
+        PerlIO_printf(PerlIO_stderr(), "stat() - final %d\n", res);
     }
     return res;
 }
