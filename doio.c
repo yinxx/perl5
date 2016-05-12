@@ -1205,6 +1205,8 @@ Perl_do_close(pTHX_ GV *gv, bool not_implicit)
                            SvPVX(*temp_psv), Strerror(errno));
             }
         }
+        /* ensure the magic clean up code doesn't try to delete the work file again */
+        (void)av_store((AV*)mg->mg_obj, 1, &PL_sv_undef);
         mg_freeext((SV*)io, PERL_MAGIC_uvar, &argvout_vtbl);
     }
     else {
