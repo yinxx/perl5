@@ -804,6 +804,39 @@ S_openn_cleanup(pTHX_ GV *gv, IO *io, PerlIO *fp, char *mode, const char *oname,
     return FALSE;
 }
 
+static int
+S_argvout_free(pTHX_ SV *sv, MAGIC *mg) {
+    SV **temp_psv;
+
+    PERL_UNUSED_ARG(sv);
+
+    assert(mg->mg_obj && SvTYPE(mg->mg_obj) == SVt_PVAV);
+    temp_psv = av_fetch((AV*)mg->mg_obj, 1, FALSE);
+    if (temp_psv && *temp_psv && SvOK(*temp_psv)) {
+        UNLINK(SvPVX(*temp_psv));
+    }
+
+    return 0;
+}
+
+/* Magic of this type has an AV containing the following:
+   0: name of the backup file (if any)
+   1: name of the temp output file
+   2: name of the original file
+   3: file mode of the original file
+ */
+static const MGVTBL argvout_vtbl =
+    {
+        NULL, /* svt_get */
+        NULL, /* svt_set */
+        NULL, /* svt_len */
+        NULL, /* svt_clear */
+        S_argvout_free, /* svt_free */
+        NULL, /* svt_copy */
+        NULL, /* svt_dup */
+        NULL  /* svt_local */
+    };
+
 PerlIO *
 Perl_nextargv(pTHX_ GV *gv, bool nomagicopen)
 {
