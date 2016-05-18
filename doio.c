@@ -804,6 +804,55 @@ S_openn_cleanup(pTHX_ GV *gv, IO *io, PerlIO *fp, char *mode, const char *oname,
     return FALSE;
 }
 
+/* Open a temp file in the same directory as an original name.
+*/
+
+static bool
+S_openindirtemp(pTHX_ GV *gv, SV *orig_name, SV *temp_out_name) {
+    int fd;
+    PerlIO *fp;
+    const char *p = SvPV_nolen(orig_name);
+    const char *sep;
+
+    /* look for the last directory separator */
+    sep = strrchr(p, '/');
+
+#ifdef DOSISH
+    {
+        const char *sep2;
+        if ((sep2 = strrchr(sep ? sep : p, '\\')))
+            sep = sep2;
+    }
+#endif
+#ifdef VMS
+    if (!sep) {
+        const char *openp = strchr(p, '[');
+        if (openp)
+            sep = strchr(openp, ']');
+        else {
+            sep = strchr(p, ':');
+        }
+    }
+#endif
+    if (sep) {
+        sv_setpvn(temp_out_name, p, sep - p + 1);
+        sv_catpvs(temp_out_name, "XXXXXXXX");
+    }
+    else
+        sv_setpvs(temp_out_name, "XXXXXXXX");
+
+    fd = Perl_my_mkstemp(SvPVX(temp_out_name));
+
+    if (fd < 0)
+        return FALSE;
+
+    fp = PerlIO_fdopen(fd, "w+");
+    if (!fp)
+        return FALSE;
+
+    return do_openn(gv, "+>&", 3, 0, 0, 0, fp, NULL, 0);
+}
+
 static int
 S_argvout_free(pTHX_ SV *sv, MAGIC *mg) {
     SV **temp_psv;
