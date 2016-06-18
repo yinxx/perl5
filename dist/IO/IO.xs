@@ -252,7 +252,7 @@ fsetpos(handle, pos)
 #ifdef PerlIO
 #if PERL_VERSION < 8
 	    char *p;
-	    STRLEN len;
+	    Size_t len;
 	    if (SvOK(pos) && (p = SvPV(pos,len)) && len == sizeof(Fpos_t)) {
 		RETVAL = PerlIO_setpos(handle, (Fpos_t*)p);
 	    }
@@ -265,7 +265,7 @@ fsetpos(handle, pos)
 #endif
 #else
 	    char *p;
-	    STRLEN len;
+	    Size_t len;
 	    if ((p = SvPV(pos,len)) && len == sizeof(Fpos_t)) {
 		RETVAL = fsetpos(handle, (Fpos_t*)p);
 	    }

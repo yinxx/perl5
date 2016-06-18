@@ -2024,7 +2024,7 @@ Perl_kill_file(pTHX_ const char *name)
 int
 Perl_my_mkdir(pTHX_ const char *dir, Mode_t mode)
 {
-  STRLEN dirlen = strlen(dir);
+  Size_t dirlen = strlen(dir);
 
   /* zero length string sometimes gives ACCVIO */
   if (dirlen == 0) return -1;
@@ -2047,7 +2047,7 @@ Perl_my_mkdir(pTHX_ const char *dir, Mode_t mode)
 int
 Perl_my_chdir(pTHX_ const char *dir)
 {
-  STRLEN dirlen = strlen(dir);
+  Size_t dirlen = strlen(dir);
   const char *dir1 = dir;
 
   /* POSIX says we should set ENOENT for zero length string. */
@@ -2096,7 +2096,7 @@ Perl_my_chmod(pTHX_ const char *file_spec, mode_t mode)
   Stat_t st;
   int ret = -1;
   char * changefile;
-  STRLEN speclen = strlen(file_spec);
+  Size_t speclen = strlen(file_spec);
 
   /* zero length string sometimes gives ACCVIO */
   if (speclen == 0) return -1;
@@ -3660,7 +3660,7 @@ store_pipelocs(pTHX)
     char  *dir, *x;
     char  *unixdir;
     char  temp[NAM$C_MAXRSS+1];
-    STRLEN n_a;
+    Size_t n_a;
 
     if (head_PLOC)  
         free_pipelocs(aTHX_ &head_PLOC);
@@ -5474,7 +5474,7 @@ int_rmsexpand
   char * outbufl;
   struct FAB myfab = cc$rms_fab;
   rms_setup_nam(mynam);
-  STRLEN speclen;
+  Size_t speclen;
   unsigned long int retsts, trimver, trimtype, haslower = 0, isunix = 0;
   int sts;
 
@@ -6655,7 +6655,7 @@ int_pathify_dirspec(const char *dir, char *buf)
     char * exp_spec, *ret_spec;
     char * trndir;
     unsigned short int trnlnm_iter_count;
-    STRLEN trnlen;
+    Size_t trnlen;
     int need_to_lower;
 
     if (vms_debug_fileify) {
@@ -6830,7 +6830,7 @@ int_pathify_dirspec(const char *dir, char *buf)
         char * lastdot;
         char * lastslash;
         int is_dir;
-        STRLEN dir_len = strlen(trndir);
+        Size_t dir_len = strlen(trndir);
 
         lastslash = strrchr(trndir, '/');
         if (lastslash == NULL)
@@ -6861,7 +6861,7 @@ int_pathify_dirspec(const char *dir, char *buf)
            lastdot = strrchr(lastslash, '.');
         }
         if (lastdot != NULL) {
-            STRLEN e_len;
+            Size_t e_len;
              /* '.dir' is discarded, and any other '.' is invalid */
             e_len = strlen(lastdot);
 
@@ -8547,7 +8547,7 @@ int_tovmsspec(const char *path, char *rslt, int dir_flag, int * utf8_flag)
   if (*cp2 == '/') {
     char *trndev;
     int islnm, rooted;
-    STRLEN trnend;
+    Size_t trnend;
 
     while (*(cp2+1) == '/') cp2++;  /* Skip multiple /s */
     if (!*(cp2+1)) {
@@ -10507,7 +10507,7 @@ setup_argstr(pTHX_ SV *really, SV **mark, SV **sp)
   size_t cmdlen = 0;
   size_t rlen;
   SV **idx;
-  STRLEN n_a;
+  Size_t n_a;
 
   idx = mark;
   if (really) {
@@ -12652,7 +12652,7 @@ rmsexpand_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *fspec, *defspec = NULL, *rslt;
-  STRLEN n_a;
+  Size_t n_a;
   int fs_utf8, dfs_utf8;
 
   fs_utf8 = 0;
@@ -12682,7 +12682,7 @@ vmsify_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *vmsified;
-  STRLEN n_a;
+  Size_t n_a;
   int utf8_fl;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::vmsify(spec)");
@@ -12703,7 +12703,7 @@ unixify_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *unixified;
-  STRLEN n_a;
+  Size_t n_a;
   int utf8_fl;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::unixify(spec)");
@@ -12724,7 +12724,7 @@ fileify_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *fileified;
-  STRLEN n_a;
+  Size_t n_a;
   int utf8_fl;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::fileify(spec)");
@@ -12745,7 +12745,7 @@ pathify_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *pathified;
-  STRLEN n_a;
+  Size_t n_a;
   int utf8_fl;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::pathify(spec)");
@@ -12766,7 +12766,7 @@ vmspath_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *vmspath;
-  STRLEN n_a;
+  Size_t n_a;
   int utf8_fl;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::vmspath(spec)");
@@ -12787,7 +12787,7 @@ unixpath_fromperl(pTHX_ CV *cv)
 {
   dXSARGS;
   char *unixpath;
-  STRLEN n_a;
+  Size_t n_a;
   int utf8_fl;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::unixpath(spec)");
@@ -12810,7 +12810,7 @@ candelete_fromperl(pTHX_ CV *cv)
   char *fspec, *fsp;
   SV *mysv;
   IO *io;
-  STRLEN n_a;
+  Size_t n_a;
 
   if (items != 1) Perl_croak(aTHX_ "Usage: VMS::Filespec::candelete(spec)");
 
@@ -12848,7 +12848,7 @@ rmscopy_fromperl(pTHX_ CV *cv)
   int date_flag;
   SV *mysv;
   IO *io;
-  STRLEN n_a;
+  Size_t n_a;
 
   if (items < 2 || items > 3)
     Perl_croak(aTHX_ "Usage: File::Copy::rmscopy(from,to[,date_flag])");
@@ -13001,7 +13001,7 @@ Perl_vms_start_glob(pTHX_ SV *tmpglob, IO *io)
     char *begin, *cp;
     $DESCRIPTOR(dfltdsc,"SYS$DISK:[]*.*;");
     PerlIO *tmpfp;
-    STRLEN i;
+    Size_t i;
     struct dsc$descriptor_s wilddsc = {0, DSC$K_DTYPE_T, DSC$K_CLASS_S, 0};
     struct dsc$descriptor_vs rsdsc;
     unsigned long int cxt = 0, sts = 0, ok = 1, hasdir = 0;
@@ -13079,7 +13079,7 @@ Perl_vms_start_glob(pTHX_ SV *tmpglob, IO *io)
 	if (!stat_sts && S_ISDIR(st.st_mode)) {
             char * vms_dir;
             const char * fname;
-            STRLEN fname_len;
+            Size_t fname_len;
 
             /* Test to see if SvPVX_const(tmpglob) ends with a VMS */
             /* path delimiter of ':>]', if so, then the old behavior has */
@@ -13282,7 +13282,7 @@ unixrealpath_fromperl(pTHX_ CV *cv)
 {
     dXSARGS;
     char *fspec, *rslt_spec, *rslt;
-    STRLEN n_a;
+    Size_t n_a;
 
     if (!items || items != 1)
 	Perl_croak(aTHX_ "Usage: VMS::Filespec::unixrealpath(spec)");
@@ -13310,7 +13310,7 @@ vmsrealpath_fromperl(pTHX_ CV *cv)
 {
     dXSARGS;
     char *fspec, *rslt_spec, *rslt;
-    STRLEN n_a;
+    Size_t n_a;
 
     if (!items || items != 1)
 	Perl_croak(aTHX_ "Usage: VMS::Filespec::vmsrealpath(spec)");

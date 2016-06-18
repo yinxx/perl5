@@ -574,7 +574,7 @@ S_pad_alloc_name(pTHX_ PADNAME *name, U32 flags, HV *typestash,
 }
 
 /*
-=for apidoc Am|PADOFFSET|pad_add_name_pvn|const char *namepv|STRLEN namelen|U32 flags|HV *typestash|HV *ourstash
+=for apidoc Am|PADOFFSET|pad_add_name_pvn|const char *namepv|Size_t namelen|U32 flags|HV *typestash|HV *ourstash
 
 Allocates a place in the currently-compiling pad for a named lexical
 variable.  Stores the name and other metadata in the name part of the
@@ -595,7 +595,7 @@ flags can be OR'ed together:
 */
 
 PADOFFSET
-Perl_pad_add_name_pvn(pTHX_ const char *namepv, STRLEN namelen,
+Perl_pad_add_name_pvn(pTHX_ const char *namepv, Size_t namelen,
 		U32 flags, HV *typestash, HV *ourstash)
 {
     PADOFFSET offset;
@@ -675,7 +675,7 @@ PADOFFSET
 Perl_pad_add_name_sv(pTHX_ SV *name, U32 flags, HV *typestash, HV *ourstash)
 {
     char *namepv;
-    STRLEN namelen;
+    Size_t namelen;
     PERL_ARGS_ASSERT_PAD_ADD_NAME_SV;
     namepv = SvPVutf8(name, namelen);
     return pad_add_name_pvn(namepv, namelen, flags, typestash, ourstash);
@@ -933,7 +933,7 @@ S_pad_check_dup(pTHX_ PADNAME *name, U32 flags, const HV *ourstash)
 
 
 /*
-=for apidoc Am|PADOFFSET|pad_findmy_pvn|const char *namepv|STRLEN namelen|U32 flags
+=for apidoc Am|PADOFFSET|pad_findmy_pvn|const char *namepv|Size_t namelen|U32 flags
 
 Given the name of a lexical variable, find its position in the
 currently-compiling pad.
@@ -948,7 +948,7 @@ or C<NOT_IN_PAD> if no such lexical is in scope.
 */
 
 PADOFFSET
-Perl_pad_findmy_pvn(pTHX_ const char *namepv, STRLEN namelen, U32 flags)
+Perl_pad_findmy_pvn(pTHX_ const char *namepv, Size_t namelen, U32 flags)
 {
     PADNAME *out_pn;
     int out_flags;
@@ -1026,7 +1026,7 @@ PADOFFSET
 Perl_pad_findmy_sv(pTHX_ SV *name, U32 flags)
 {
     char *namepv;
-    STRLEN namelen;
+    Size_t namelen;
     PERL_ARGS_ASSERT_PAD_FINDMY_SV;
     namepv = SvPVutf8(name, namelen);
     return pad_findmy_pvn(namepv, namelen, flags);
@@ -1067,7 +1067,7 @@ Perl_find_rundefsv(pTHX)
 }
 
 /*
-=for apidoc m|PADOFFSET|pad_findlex|const char *namepv|STRLEN namelen|U32 flags|const CV* cv|U32 seq|int warn|SV** out_capture|PADNAME** out_name|int *out_flags
+=for apidoc m|PADOFFSET|pad_findlex|const char *namepv|Size_t namelen|U32 flags|const CV* cv|U32 seq|int warn|SV** out_capture|PADNAME** out_name|int *out_flags
 
 Find a named lexical anywhere in a chain of nested pads.  Add fake entries
 in the inner pads if it's found in an outer one.
@@ -1110,7 +1110,7 @@ S_unavailable(pTHX_ PADNAME *name)
 }
 
 STATIC PADOFFSET
-S_pad_findlex(pTHX_ const char *namepv, STRLEN namelen, U32 flags, const CV* cv, U32 seq,
+S_pad_findlex(pTHX_ const char *namepv, Size_t namelen, U32 flags, const CV* cv, U32 seq,
 	int warn, SV** out_capture, PADNAME** out_name, int *out_flags)
 {
     I32 offset, new_offset;
@@ -2760,7 +2760,7 @@ C<L</newPADNAMEouter>>.
 */
 
 PADNAME *
-Perl_newPADNAMEpvn(const char *s, STRLEN len)
+Perl_newPADNAMEpvn(const char *s, Size_t len)
 {
     struct padname_with_str *alloc;
     char *alloc2; /* for Newxz */

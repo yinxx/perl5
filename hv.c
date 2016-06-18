@@ -318,7 +318,7 @@ void *
 Perl_hv_common_key_len(pTHX_ HV *hv, const char *key, I32 klen_i32,
 		       const int action, SV *val, const U32 hash)
 {
-    STRLEN klen;
+    Size_t klen;
     int flags;
 
     PERL_ARGS_ASSERT_HV_COMMON_KEY_LEN;
@@ -334,7 +334,7 @@ Perl_hv_common_key_len(pTHX_ HV *hv, const char *key, I32 klen_i32,
 }
 
 void *
-Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, Size_t klen,
 	       int flags, int action, SV *val, U32 hash)
 {
     dVAR;
@@ -885,7 +885,7 @@ Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
 
     xhv->xhv_keys++; /* HvTOTALKEYS(hv)++ */
     if ( DO_HSPLIT(xhv) ) {
-        const STRLEN oldsize = xhv->xhv_max + 1;
+        const Size_t oldsize = xhv->xhv_max + 1;
         const U32 items = (U32)HvPLACEHOLDERS_get(hv);
 
         if (items /* hash has placeholders  */
@@ -988,7 +988,7 @@ value, or 0 to ask for it to be computed.
 */
 
 STATIC SV *
-S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, Size_t klen,
 		   int k_flags, I32 d_flags, U32 hash)
 {
     dVAR;
@@ -1301,9 +1301,9 @@ S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
 
 
 STATIC void
-S_hsplit(pTHX_ HV *hv, STRLEN const oldsize, STRLEN newsize)
+S_hsplit(pTHX_ HV *hv, Size_t const oldsize, Size_t newsize)
 {
-    STRLEN i = 0;
+    Size_t i = 0;
     char *a = (char*) HvARRAY(hv);
     HE **aep;
 
@@ -1474,7 +1474,7 @@ Perl_newHVhv(pTHX_ HV *ohv)
 {
     dVAR;
     HV * const hv = newHV();
-    STRLEN hv_max;
+    Size_t hv_max;
 
     if (!ohv || (!HvTOTALKEYS(ohv) && !SvMAGICAL((const SV *)ohv)))
 	return hv;
@@ -1482,7 +1482,7 @@ Perl_newHVhv(pTHX_ HV *ohv)
 
     if (!SvMAGICAL((const SV *)ohv)) {
 	/* It's an ordinary hash, so copy it fast. AMS 20010804 */
-	STRLEN i;
+	Size_t i;
 	const bool shared = !!HvSHAREKEYS(ohv);
 	HE **ents, ** const oents = (HE **)HvARRAY(ohv);
 	char *a;
@@ -1503,7 +1503,7 @@ Perl_newHVhv(pTHX_ HV *ohv)
 	    for (; oent; oent = HeNEXT(oent)) {
 		const U32 hash   = HeHASH(oent);
 		const char * const key = HeKEY(oent);
-		const STRLEN len = HeKLEN(oent);
+		const Size_t len = HeKLEN(oent);
 		const int flags  = HeKFLAGS(oent);
 		HE * const ent   = new_HE();
 		SV *const val    = HeVAL(oent);
@@ -1530,7 +1530,7 @@ Perl_newHVhv(pTHX_ HV *ohv)
 	HE *entry;
 	const I32 riter = HvRITER_get(ohv);
 	HE * const eiter = HvEITER_get(ohv);
-        STRLEN hv_keys = HvTOTALKEYS(ohv);
+        Size_t hv_keys = HvTOTALKEYS(ohv);
 
         HV_SET_MAX_ADJUSTED_FOR_KEYS(hv,hv_max,hv_keys);
 
@@ -1570,8 +1570,8 @@ Perl_hv_copy_hints_hv(pTHX_ HV *const ohv)
     HV * const hv = newHV();
 
     if (ohv) {
-	STRLEN hv_max = HvMAX(ohv);
-        STRLEN hv_keys = HvTOTALKEYS(ohv);
+	Size_t hv_max = HvMAX(ohv);
+        Size_t hv_keys = HvTOTALKEYS(ohv);
 	HE *entry;
 	const I32 riter = HvRITER_get(ohv);
 	HE * const eiter = HvEITER_get(ohv);
@@ -1686,7 +1686,7 @@ Perl_hv_clear(pTHX_ HV *hv)
     SAVEFREESV(SvREFCNT_inc_simple_NN(hv));
     if (SvREADONLY(hv) && HvARRAY(hv) != NULL) {
 	/* restricted hash: convert all keys to placeholders */
-	STRLEN i;
+	Size_t i;
 	for (i = 0; i <= xhv->xhv_max; i++) {
 	    HE *entry = (HvARRAY(hv))[i];
 	    for (; entry; entry = HeNEXT(entry)) {
@@ -1802,7 +1802,7 @@ S_clear_placeholders(pTHX_ HV *hv, U32 items)
 STATIC void
 S_hfreeentries(pTHX_ HV *hv)
 {
-    STRLEN index = 0;
+    Size_t index = 0;
     XPVHV * const xhv = (XPVHV*)SvANY(hv);
     SV *sv;
 
@@ -1824,13 +1824,13 @@ S_hfreeentries(pTHX_ HV *hv)
  * initially be set to 0. hfree_next_entry() may update it.  */
 
 SV*
-Perl_hfree_next_entry(pTHX_ HV *hv, STRLEN *indexp)
+Perl_hfree_next_entry(pTHX_ HV *hv, Size_t *indexp)
 {
     struct xpvhv_aux *iter;
     HE *entry;
     HE ** array;
 #ifdef DEBUGGING
-    STRLEN orig_index = *indexp;
+    Size_t orig_index = *indexp;
 #endif
 
     PERL_ARGS_ASSERT_HFREE_NEXT_ENTRY;
@@ -1877,7 +1877,7 @@ Perl_hfree_next_entry(pTHX_ HV *hv, STRLEN *indexp)
 	&& HeVAL(entry) && isGV(HeVAL(entry))
 	&& GvHV(HeVAL(entry)) && HvENAME(GvHV(HeVAL(entry)))
     ) {
-	STRLEN klen;
+	Size_t klen;
 	const char * const key = HePV(entry,klen);
 	if ((klen > 1 && key[klen-1]==':' && key[klen-2]==':')
 	 || (klen == 1 && key[0] == ':')) {
@@ -2017,10 +2017,10 @@ the hash is split.
 =cut
 */
 
-STRLEN
+Size_t
 Perl_hv_fill(pTHX_ HV *const hv)
 {
-    STRLEN count = 0;
+    Size_t count = 0;
     HE **ents = HvARRAY(hv);
     struct xpvhv_aux *aux = SvOOK(hv) ? HvAUX(hv) : NULL;
 
@@ -2721,7 +2721,7 @@ Perl_hv_iterkey(pTHX_ HE *entry, I32 *retlen)
     PERL_ARGS_ASSERT_HV_ITERKEY;
 
     if (HeKLEN(entry) == HEf_SVKEY) {
-	STRLEN len;
+	Size_t len;
 	char * const p = SvPV(HeKEY_sv(entry), len);
 	*retlen = len;
 	return p;
@@ -2860,7 +2860,7 @@ S_unshare_hek_or_pvn(pTHX_ const HEK *hek, const char *str, I32 len, U32 hash)
 
         hash = HEK_HASH(hek);
     } else if (len < 0) {
-        STRLEN tmplen = -len;
+        Size_t tmplen = -len;
         is_utf8 = TRUE;
         /* See the note in hv_fetch(). --jhi */
         str = (char*)bytes_from_utf8((U8*)str, &tmplen, &is_utf8);
@@ -2932,7 +2932,7 @@ Perl_share_hek(pTHX_ const char *str, I32 len, U32 hash)
     PERL_ARGS_ASSERT_SHARE_HEK;
 
     if (len < 0) {
-      STRLEN tmplen = -len;
+      Size_t tmplen = -len;
       is_utf8 = TRUE;
       /* See the note in hv_fetch(). --jhi */
       str = (char*)bytes_from_utf8((U8*)str, &tmplen, &is_utf8);
@@ -3025,7 +3025,7 @@ S_share_hek_flags(pTHX_ const char *str, I32 len, U32 hash, int flags)
 	xhv->xhv_keys++; /* HvTOTALKEYS(hv)++ */
 	if (!next) {			/* initial entry? */
 	} else if ( DO_HSPLIT(xhv) ) {
-            const STRLEN oldsize = xhv->xhv_max + 1;
+            const Size_t oldsize = xhv->xhv_max + 1;
             hsplit(PL_strtab, oldsize, oldsize * 2);
 	}
     }
@@ -3173,7 +3173,7 @@ Perl_refcounted_he_chain_2hv(pTHX_ const struct refcounted_he *chain, U32 flags)
 		   than the key we've already put in the hash, so if they are
 		   the same, skip adding entry.  */
 #ifdef USE_ITHREADS
-		const STRLEN klen = HeKLEN(entry);
+		const Size_t klen = HeKLEN(entry);
 		const char *const key = HeKEY(entry);
 		if (klen == chain->refcounted_he_keylen
 		    && (!!HeKUTF8(entry)
@@ -3234,7 +3234,7 @@ Perl_refcounted_he_chain_2hv(pTHX_ const struct refcounted_he *chain, U32 flags)
 }
 
 /*
-=for apidoc m|SV *|refcounted_he_fetch_pvn|const struct refcounted_he *chain|const char *keypv|STRLEN keylen|U32 hash|U32 flags
+=for apidoc m|SV *|refcounted_he_fetch_pvn|const struct refcounted_he *chain|const char *keypv|Size_t keylen|U32 hash|U32 flags
 
 Search along a C<refcounted_he> chain for an entry with the key specified
 by C<keypv> and C<keylen>.  If C<flags> has the C<REFCOUNTED_HE_KEY_UTF8>
@@ -3249,7 +3249,7 @@ if there is no value associated with the key.
 
 SV *
 Perl_refcounted_he_fetch_pvn(pTHX_ const struct refcounted_he *chain,
-			 const char *keypv, STRLEN keylen, U32 hash, U32 flags)
+			 const char *keypv, Size_t keylen, U32 hash, U32 flags)
 {
     dVAR;
     U8 utf8_flag;
@@ -3263,7 +3263,7 @@ Perl_refcounted_he_fetch_pvn(pTHX_ const struct refcounted_he *chain,
     if (flags & REFCOUNTED_HE_KEY_UTF8) {
 	/* For searching purposes, canonicalise to Latin-1 where possible. */
 	const char *keyend = keypv + keylen, *p;
-	STRLEN nonascii_count = 0;
+	Size_t nonascii_count = 0;
 	for (p = keypv; p != keyend; p++) {
 	    if (! UTF8_IS_INVARIANT(*p)) {
 		if (! UTF8_IS_NEXT_CHAR_DOWNGRADEABLE(p, keyend)) {
@@ -3307,7 +3307,7 @@ Perl_refcounted_he_fetch_pvn(pTHX_ const struct refcounted_he *chain,
 	    utf8_flag == (chain->refcounted_he_data[0] & HVhek_UTF8)
 #else
 	    hash == HEK_HASH(chain->refcounted_he_hek) &&
-	    keylen == (STRLEN)HEK_LEN(chain->refcounted_he_hek) &&
+	    keylen == (Size_t)HEK_LEN(chain->refcounted_he_hek) &&
 	    memEQ(HEK_KEY(chain->refcounted_he_hek), keypv, keylen) &&
 	    utf8_flag == (HEK_FLAGS(chain->refcounted_he_hek) & HVhek_UTF8)
 #endif
@@ -3354,7 +3354,7 @@ Perl_refcounted_he_fetch_sv(pTHX_ const struct refcounted_he *chain,
 			 SV *key, U32 hash, U32 flags)
 {
     const char *keypv;
-    STRLEN keylen;
+    Size_t keylen;
     PERL_ARGS_ASSERT_REFCOUNTED_HE_FETCH_SV;
     if (flags & REFCOUNTED_HE_KEY_UTF8)
 	Perl_croak(aTHX_ "panic: refcounted_he_fetch_sv bad flags %"UVxf,
@@ -3368,7 +3368,7 @@ Perl_refcounted_he_fetch_sv(pTHX_ const struct refcounted_he *chain,
 }
 
 /*
-=for apidoc m|struct refcounted_he *|refcounted_he_new_pvn|struct refcounted_he *parent|const char *keypv|STRLEN keylen|U32 hash|SV *value|U32 flags
+=for apidoc m|struct refcounted_he *|refcounted_he_new_pvn|struct refcounted_he *parent|const char *keypv|Size_t keylen|U32 hash|SV *value|U32 flags
 
 Creates a new C<refcounted_he>.  This consists of a single key/value
 pair and a reference to an existing C<refcounted_he> chain (which may
@@ -3402,15 +3402,15 @@ C<refcounted_he>.
 
 struct refcounted_he *
 Perl_refcounted_he_new_pvn(pTHX_ struct refcounted_he *parent,
-	const char *keypv, STRLEN keylen, U32 hash, SV *value, U32 flags)
+	const char *keypv, Size_t keylen, U32 hash, SV *value, U32 flags)
 {
     dVAR;
-    STRLEN value_len = 0;
+    Size_t value_len = 0;
     const char *value_p = NULL;
     bool is_pv;
     char value_type;
     char hekflags;
-    STRLEN key_offset = 1;
+    Size_t key_offset = 1;
     struct refcounted_he *he;
     PERL_ARGS_ASSERT_REFCOUNTED_HE_NEW_PVN;
 
@@ -3439,7 +3439,7 @@ Perl_refcounted_he_new_pvn(pTHX_ struct refcounted_he *parent,
     if (flags & REFCOUNTED_HE_KEY_UTF8) {
 	/* Canonicalise to Latin-1 where possible. */
 	const char *keyend = keypv + keylen, *p;
-	STRLEN nonascii_count = 0;
+	Size_t nonascii_count = 0;
 	for (p = keypv; p != keyend; p++) {
 	    if (! UTF8_IS_INVARIANT(*p)) {
 		if (! UTF8_IS_NEXT_CHAR_DOWNGRADEABLE(p, keyend)) {
@@ -3542,7 +3542,7 @@ Perl_refcounted_he_new_sv(pTHX_ struct refcounted_he *parent,
 	SV *key, U32 hash, SV *value, U32 flags)
 {
     const char *keypv;
-    STRLEN keylen;
+    Size_t keylen;
     PERL_ARGS_ASSERT_REFCOUNTED_HE_NEW_SV;
     if (flags & REFCOUNTED_HE_KEY_UTF8)
 	Perl_croak(aTHX_ "panic: refcounted_he_new_sv bad flags %"UVxf,
@@ -3632,7 +3632,7 @@ The flags pointer may be set to C<SVf_UTF8> or 0.
 /* pp_entereval is aware that labels are stored with a key ':' at the top of
    the linked list.  */
 const char *
-Perl_cop_fetch_label(pTHX_ COP *const cop, STRLEN *len, U32 *flags) {
+Perl_cop_fetch_label(pTHX_ COP *const cop, Size_t *len, U32 *flags) {
     struct refcounted_he *const chain = cop->cop_hints_hash;
 
     PERL_ARGS_ASSERT_COP_FETCH_LABEL;
@@ -3646,7 +3646,7 @@ Perl_cop_fetch_label(pTHX_ COP *const cop, STRLEN *len, U32 *flags) {
     if (*REF_HE_KEY(chain) != ':')
 	return NULL;
 #else
-    if ((STRLEN)HEK_LEN(chain->refcounted_he_hek) != 1)
+    if ((Size_t)HEK_LEN(chain->refcounted_he_hek) != 1)
 	return NULL;
     if (*HEK_KEY(chain->refcounted_he_hek) != ':')
 	return NULL;
@@ -3677,7 +3677,7 @@ for a UTF-8 label.
 */
 
 void
-Perl_cop_store_label(pTHX_ COP *const cop, const char *label, STRLEN len,
+Perl_cop_store_label(pTHX_ COP *const cop, const char *label, Size_t len,
 		     U32 flags)
 {
     SV *labelsv;

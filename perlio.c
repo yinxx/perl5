@@ -290,7 +290,7 @@ PerlIO_openn(pTHX_ const char *layers, const char *mode, int fd,
 	if (*args == &PL_sv_undef)
 	    return PerlIO_tmpfile();
 	else {
-            STRLEN len;
+            Size_t len;
 	    const char *name = SvPV_const(*args, len);
             if (!IS_SAFE_PATHNAME(name, len, "open"))
                 return NULL;
@@ -376,12 +376,12 @@ PerlIO_debug(const char *fmt, ...)
 	const char * const s = CopFILE(PL_curcop);
 	/* Use fixed buffer as sv_catpvf etc. needs SVs */
 	char buffer[1024];
-	const STRLEN len1 = my_snprintf(buffer, sizeof(buffer), "%.40s:%" IVdf " ", s ? s : "(none)", (IV) CopLINE(PL_curcop));
-	const STRLEN len2 = my_vsnprintf(buffer + len1, sizeof(buffer) - len1, fmt, ap);
+	const Size_t len1 = my_snprintf(buffer, sizeof(buffer), "%.40s:%" IVdf " ", s ? s : "(none)", (IV) CopLINE(PL_curcop));
+	const Size_t len2 = my_vsnprintf(buffer + len1, sizeof(buffer) - len1, fmt, ap);
 	PERL_UNUSED_RESULT(PerlLIO_write(PL_perlio_debug_fd, buffer, len1 + len2));
 #else
 	const char *s = CopFILE(PL_curcop);
-	STRLEN len;
+	Size_t len;
 	SV * const sv = Perl_newSVpvf(aTHX_ "%s:%" IVdf " ", s ? s : "(none)",
 				      (IV) CopLINE(PL_curcop));
 	Perl_sv_vcatpvf(aTHX_ sv, fmt, &ap);
@@ -707,7 +707,7 @@ PerlIO_get_layers(pTHX_ PerlIO *f)
  */
 
 PerlIO_funcs *
-PerlIO_find_layer(pTHX_ const char *name, STRLEN len, int load)
+PerlIO_find_layer(pTHX_ const char *name, Size_t len, int load)
 {
 
     IV i;
@@ -715,7 +715,7 @@ PerlIO_find_layer(pTHX_ const char *name, STRLEN len, int load)
 	len = strlen(name);
     for (i = 0; i < PL_known_layers->cur; i++) {
 	PerlIO_funcs * const f = PL_known_layers->array[i].funcs;
-        const STRLEN this_len = strlen(f->name);
+        const Size_t this_len = strlen(f->name);
         if (this_len == len && memEQ(f->name, name, len)) {
 	    DEBUG_i( PerlIO_debug("%.*s => %p\n", (int) len, name, (void*)f) );
 	    return f;
@@ -815,7 +815,7 @@ XS(XS_io_MODIFY_SCALAR_ATTRIBUTES)
     mg_magical(sv);
     Perl_warn(aTHX_ "attrib %" SVf, SVfARG(sv));
     for (i = 2; i < items; i++) {
-	STRLEN len;
+	Size_t len;
 	const char * const name = SvPV_const(ST(i), len);
 	SV * const layer = PerlIO_find_layer(aTHX_ name, len, 1);
 	if (layer) {
@@ -863,7 +863,7 @@ XS(XS_PerlIO__Layer__find)
     if (items < 2)
 	Perl_croak(aTHX_ "Usage class->find(name[,load])");
     else {
-	STRLEN len;
+	Size_t len;
 	const char * const name = SvPV_const(ST(1), len);
 	const bool load = (items > 2) ? SvTRUE_NN(ST(2)) : 0;
 	PerlIO_funcs * const layer = PerlIO_find_layer(aTHX_ name, len, load);
@@ -892,10 +892,10 @@ PerlIO_parse_layers(pTHX_ PerlIO_list_t *av, const char *names)
 	    while (isSPACE(*s) || *s == ':')
 		s++;
 	    if (*s) {
-		STRLEN llen = 0;
+		Size_t llen = 0;
 		const char *e = s;
 		const char *as = NULL;
-		STRLEN alen = 0;
+		Size_t alen = 0;
 		if (!isIDFIRST(*s)) {
 		    /*
 		     * Message is consistent with how attribute lists are
@@ -2411,7 +2411,7 @@ void PerlIO_teardown(void) /* Call only from PERL_SYS_TERM(). */
 	int i;
 	for (i = 3; i < PL_perlio_fd_refcnt_size; i++) {
 	    if (PL_perlio_fd_refcnt[i]) {
-		const STRLEN len =
+		const Size_t len =
 		    my_snprintf(buf, sizeof(buf),
 				"PerlIO_teardown: fd %d refcnt=%d\n",
 				i, PL_perlio_fd_refcnt[i]);
@@ -2649,7 +2649,7 @@ PerlIOUnix_open(pTHX_ PerlIO_funcs *self, PerlIO_list_t *layers,
 #endif
 	}
 	if (imode != -1) {
-            STRLEN len;
+            Size_t len;
 	    const char *path = SvPV_const(*args, len);
 	    if (!IS_SAFE_PATHNAME(path, len, "open"))
                 return NULL;
@@ -3007,7 +3007,7 @@ PerlIOStdio_open(pTHX_ PerlIO_funcs *self, PerlIO_list_t *layers,
 {
     char tmode[8];
     if (PerlIOValid(f)) {
-        STRLEN len;
+        Size_t len;
 	const char * const path = SvPV_const(*args, len);
 	PerlIOStdio * const s = PerlIOSelf(f, PerlIOStdio);
 	FILE *stdio;
@@ -3024,7 +3024,7 @@ PerlIOStdio_open(pTHX_ PerlIO_funcs *self, PerlIO_list_t *layers,
     }
     else {
 	if (narg > 0) {
-            STRLEN len;
+            Size_t len;
 	    const char * const path = SvPV_const(*args, len);
             if (!IS_SAFE_PATHNAME(path, len, "open"))
                 return NULL;
@@ -4968,7 +4968,7 @@ PerlIO_vprintf(PerlIO *f, const char *fmt, va_list ap)
     dTHX;
     SV * sv;
     const char *s;
-    STRLEN len;
+    Size_t len;
     SSize_t wrote;
 #ifdef NEED_VA_COPY
     va_list apc;
@@ -5142,7 +5142,7 @@ PerlIO_setpos(PerlIO *f, SV *pos)
     if (SvOK(pos)) {
 	if (f) {
 	    dTHX;
-	    STRLEN len;
+	    Size_t len;
 	    const Off_t * const posn = (Off_t *) SvPV(pos, len);
 	    if(len == sizeof(Off_t))
 		return PerlIO_seek(f, *posn, SEEK_SET);
@@ -5159,7 +5159,7 @@ PerlIO_setpos(PerlIO *f, SV *pos)
     if (SvOK(pos)) {
 	if (f) {
 	    dTHX;
-	    STRLEN len;
+	    Size_t len;
 	    Fpos_t * const fpos = (Fpos_t *) SvPV(pos, len);
 	    if(len == sizeof(Fpos_t))
 #if defined(USE_64_BIT_STDIO) && defined(USE_FSETPOS64)

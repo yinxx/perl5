@@ -418,7 +418,7 @@ mro_is_universal(...)
     SV* classname;
     HV* isarev;
     char* classname_pv;
-    STRLEN classname_len;
+    Size_t classname_len;
     HE* he;
   PPCODE:
     if (items != 1)
@@ -480,8 +480,8 @@ mro__nextcan(...)
     const char *fq_subname = NULL;
     const char *subname = NULL;
     bool subname_utf8 = 0;
-    STRLEN stashname_len;
-    STRLEN subname_len;
+    Size_t stashname_len;
+    Size_t subname_len;
     SV* sv;
     GV** gvp;
     AV* linear_av;
@@ -512,7 +512,7 @@ mro__nextcan(...)
         cxix = __dopoptosub_at(ccstack, cxix);
         for (;;) {
 	    GV* cvgv;
-	    STRLEN fq_subname_len;
+	    Size_t fq_subname_len;
 
             /* we may be in a higher stacklevel, so dig down deeper */
             while (cxix < 0) {

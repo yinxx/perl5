@@ -205,7 +205,7 @@ ULONG
 PERLEVAL (PCSZ name, LONG rargc, const RXSTRING *rargv, PCSZ queuename, PRXSTRING retstr)
 {
     SV *res, *in;
-    STRLEN len, n_a;
+    Size_t len, n_a;
     char *str;
 
     last_error[0] = 0;

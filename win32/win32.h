@@ -404,9 +404,9 @@ DllExport HWND		win32_create_message_window(void);
 DllExport int		win32_async_check(pTHX);
 
 extern int		my_fclose(FILE *);
-extern char *		win32_get_privlib(WIN32_NO_REGISTRY_M_(const char *pl) STRLEN *const len);
-extern char *		win32_get_sitelib(const char *pl, STRLEN *const len);
-extern char *		win32_get_vendorlib(const char *pl, STRLEN *const len);
+extern char *		win32_get_privlib(WIN32_NO_REGISTRY_M_(const char *pl) Size_t *const len);
+extern char *		win32_get_sitelib(const char *pl, Size_t *const len);
+extern char *		win32_get_vendorlib(const char *pl, Size_t *const len);
 
 #ifdef PERL_IMPLICIT_SYS
 extern void		win32_delete_internal_host(void *h);

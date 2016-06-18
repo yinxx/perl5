@@ -514,20 +514,20 @@ PerlEnvOsId(struct IPerlEnv* piPerl)
 }
 
 char*
-PerlEnvLibPath(struct IPerlEnv* piPerl, WIN32_NO_REGISTRY_M_(const char *pl) STRLEN *const len)
+PerlEnvLibPath(struct IPerlEnv* piPerl, WIN32_NO_REGISTRY_M_(const char *pl) Size_t *const len)
 {
     return win32_get_privlib(WIN32_NO_REGISTRY_M_(pl) len);
 }
 
 char*
-PerlEnvSiteLibPath(struct IPerlEnv* piPerl, const char *pl, STRLEN *const len)
+PerlEnvSiteLibPath(struct IPerlEnv* piPerl, const char *pl, Size_t *const len)
 {
     return win32_get_sitelib(pl, len);
 }
 
 char*
 PerlEnvVendorLibPath(struct IPerlEnv* piPerl, const char *pl,
-		     STRLEN *const len)
+		     Size_t *const len)
 {
     return win32_get_vendorlib(pl, len);
 }

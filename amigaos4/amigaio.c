@@ -799,7 +799,7 @@ void *amigaos_system_child(void *userdata)
 	I32 did_pipes;
 	int pp;
 	I32 value;
-	STRLEN n_a;
+	Size_t n_a;
 	/* these next are declared by macros else where but I may be
 	 * passing modified values here so declare them explictly but
 	 * still referred to by macro below */

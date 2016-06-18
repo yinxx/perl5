@@ -478,17 +478,17 @@ PP(pp_formline)
     I32 lines = 0;	    /* number of lines that have been output */
     bool chopspace = (strchr(PL_chopset, ' ') != NULL); /* does $: have space */
     const char *chophere = NULL; /* where to chop current item */
-    STRLEN linemark = 0;    /* pos of start of line in output */
+    Size_t linemark = 0;    /* pos of start of line in output */
     NV value;
     bool gotsome = FALSE;   /* seen at least one non-blank item on this line */
-    STRLEN len;             /* length of current sv */
-    STRLEN linemax;	    /* estimate of output size in bytes */
+    Size_t len;             /* length of current sv */
+    Size_t linemax;	    /* estimate of output size in bytes */
     bool item_is_utf8 = FALSE;
     bool targ_is_utf8 = FALSE;
     const char *fmt;
     MAGIC *mg = NULL;
     U8 *source;		    /* source of bytes to append */
-    STRLEN to_copy;	    /* how may bytes to append */
+    Size_t to_copy;	    /* how may bytes to append */
     char trans;		    /* what chars to translate */
 
     mg = doparseform(tmpForm);
@@ -741,7 +741,7 @@ PP(pp_formline)
 	     * if trans, translate certain characters during the copy */
 	    {
 		U8 *tmp = NULL;
-		STRLEN grow = 0;
+		Size_t grow = 0;
 
 		SvCUR_set(PL_formtarget,
 			  t - SvPVX_const(PL_formtarget));
@@ -1216,7 +1216,7 @@ PP(pp_flop)
 	    }
 	}
 	else {
-	    STRLEN len, llen;
+	    Size_t len, llen;
 	    const char * const lpv = SvPV_nomg_const(left, llen);
 	    const char * const tmps = SvPV_nomg_const(right, len);
 
@@ -1278,7 +1278,7 @@ static const char * const context_name[] = {
 };
 
 STATIC I32
-S_dopoptolabel(pTHX_ const char *label, STRLEN len, U32 flags)
+S_dopoptolabel(pTHX_ const char *label, Size_t len, U32 flags)
 {
     I32 i;
 
@@ -1304,7 +1304,7 @@ S_dopoptolabel(pTHX_ const char *label, STRLEN len, U32 flags)
 	case CXt_LOOP_LIST:
 	case CXt_LOOP_ARY:
 	  {
-            STRLEN cx_label_len = 0;
+            Size_t cx_label_len = 0;
             U32 cx_label_flags = 0;
 	    const char *cx_label = CxLABEL_len_flags(cx, &cx_label_len, &cx_label_flags);
 	    if (!cx_label || !(
@@ -1924,7 +1924,7 @@ PP(pp_caller)
     mPUSHi(CopHINTS_get(cx->blk_oldcop));
     {
 	SV * mask ;
-	STRLEN * const old_warnings = cx->blk_oldcop->cop_warnings ;
+	Size_t * const old_warnings = cx->blk_oldcop->cop_warnings ;
 
 	if  (old_warnings == pWARN_NONE)
             mask = newSVpvn(WARN_NONEstring, WARNsize) ;
@@ -1958,7 +1958,7 @@ PP(pp_reset)
 {
     dSP;
     const char * tmps;
-    STRLEN len = 0;
+    Size_t len = 0;
     if (MAXARG < 1 || (!TOPs && !POPs))
 	tmps = NULL, len = 0;
     else
@@ -2486,7 +2486,7 @@ S_unwind_loop(pTHX)
     }
     else {
 	dSP;
-	STRLEN label_len;
+	Size_t label_len;
 	const char * const label =
 	    PL_op->op_flags & OPf_STACKED
 		? SvPV(TOPs,label_len)
@@ -2577,7 +2577,7 @@ PP(pp_redo)
 }
 
 STATIC OP *
-S_dofindlabel(pTHX_ OP *o, const char *label, STRLEN len, U32 flags, OP **opstack, OP **oplimit)
+S_dofindlabel(pTHX_ OP *o, const char *label, Size_t len, U32 flags, OP **opstack, OP **oplimit)
 {
     OP **ops = opstack;
     static const char* const too_deep = "Target of goto is too deeply nested";
@@ -2602,7 +2602,7 @@ S_dofindlabel(pTHX_ OP *o, const char *label, STRLEN len, U32 flags, OP **opstac
 	/* First try all the kids at this level, since that's likeliest. */
 	for (kid = cUNOPo->op_first; kid; kid = OpSIBLING(kid)) {
 	    if (kid->op_type == OP_NEXTSTATE || kid->op_type == OP_DBSTATE) {
-                STRLEN kid_label_len;
+                Size_t kid_label_len;
                 U32 kid_label_flags;
 		const char *kid_label = CopLABEL_len_flags(kCOP,
                                                     &kid_label_len, &kid_label_flags);
@@ -2652,7 +2652,7 @@ PP(pp_goto)
 #define GOTO_DEPTH 64
     OP *enterops[GOTO_DEPTH];
     const char *label = NULL;
-    STRLEN label_len = 0;
+    Size_t label_len = 0;
     U32 label_flags = 0;
     const bool do_dump = (PL_op->op_type == OP_DUMP);
     static const char* const must_have_label = "goto must have label";
@@ -3467,7 +3467,7 @@ STATIC PerlIO *
 S_check_type_and_open(pTHX_ SV *name)
 {
     Stat_t st;
-    STRLEN len;
+    Size_t len;
     PerlIO * retio;
     const char *p = SvPV_const(name, len);
     int st_rc;
@@ -3526,7 +3526,7 @@ S_check_type_and_open(pTHX_ SV *name)
 STATIC PerlIO *
 S_doopen_pm(pTHX_ SV *name)
 {
-    STRLEN namelen;
+    Size_t namelen;
     const char *p = SvPV_const(name, namelen);
 
     PERL_ARGS_ASSERT_DOOPEN_PM;
@@ -3657,9 +3657,9 @@ S_require_file(pTHX_ SV *const sv)
 
     PERL_CONTEXT *cx;
     const char *name;
-    STRLEN len;
+    Size_t len;
     char * unixname;
-    STRLEN unixlen;
+    Size_t unixlen;
 #ifdef VMS
     int vms_unixname = 0;
     char *unixdir;
@@ -3736,7 +3736,7 @@ S_require_file(pTHX_ SV *const sv)
                    Perl_load_module fakes up the identical optree, but its
                    arguments aren't restricted by the parser to real barewords.
                 */
-                const STRLEN package_len = len - 3;
+                const Size_t package_len = len - 3;
                 const char slashdot[2] = {'/', '.'};
 #ifdef DOSISH
                 const char backslashdot[2] = {'\\', '.'};
@@ -3923,7 +3923,7 @@ S_require_file(pTHX_ SV *const sv)
 		else {
 		  if (path_searchable) {
 		    const char *dir;
-		    STRLEN dirlen;
+		    Size_t dirlen;
 
 		    if (SvOK(dirsv)) {
 			dir = SvPV_nomg_const(dirsv, dirlen);
@@ -4147,7 +4147,7 @@ PP(pp_entereval)
     char tbuf[TYPE_DIGITS(long) + 12];
     bool saved_delete = FALSE;
     char *tmpbuf = tbuf;
-    STRLEN len;
+    Size_t len;
     CV* runcv;
     U32 seq, lex_flags = 0;
     HV *saved_hh = NULL;
@@ -4169,7 +4169,7 @@ PP(pp_entereval)
 	/* make sure we've got a plain PV (no overload etc) before testing
 	 * for taint. Making a copy here is probably overkill, but better
 	 * safe than sorry */
-	STRLEN len;
+	Size_t len;
 	const char * const p = SvPV_const(sv, len);
 
 	sv = newSVpvn_flags(p, len, SVs_TEMP | SvUTF8(sv));
@@ -4180,7 +4180,7 @@ PP(pp_entereval)
     }
     else if (bytes && SvUTF8(sv)) {
 	/* Don't modify someone else's scalar */
-	STRLEN len;
+	Size_t len;
 	sv = newSVsv(sv);
 	(void)sv_2mortal(sv);
 	SvPVbyte_force(sv,len);
@@ -5097,7 +5097,7 @@ PP(pp_break)
 static MAGIC *
 S_doparseform(pTHX_ SV *sv)
 {
-    STRLEN len;
+    Size_t len;
     char *s = SvPV(sv, len);
     char *send;
     char *base = NULL; /* start of current field */
@@ -5382,11 +5382,11 @@ S_run_user_filter(pTHX_ int idx, SV *buf_sv, int maxlen)
     SV * const filter_sub = MUTABLE_SV(IoBOTTOM_GV(datasv));
     int status = 0;
     SV *upstream;
-    STRLEN got_len;
+    Size_t got_len;
     char *got_p = NULL;
     char *prune_from = NULL;
     bool read_from_cache = FALSE;
-    STRLEN umaxlen;
+    Size_t umaxlen;
     SV *err = NULL;
 
     PERL_ARGS_ASSERT_RUN_USER_FILTER;
@@ -5402,9 +5402,9 @@ S_run_user_filter(pTHX_ int idx, SV *buf_sv, int maxlen)
     {
 	SV *const cache = datasv;
 	if (SvOK(cache)) {
-	    STRLEN cache_len;
+	    Size_t cache_len;
 	    const char *cache_p = SvPV(cache, cache_len);
-	    STRLEN take = 0;
+	    Size_t take = 0;
 
 	    if (umaxlen) {
 		/* Running in block mode and we have some cached data already.
@@ -5508,7 +5508,7 @@ S_run_user_filter(pTHX_ int idx, SV *buf_sv, int maxlen)
     }
     if (!err && prune_from) {
 	/* Oh. Too long. Stuff some in our cache.  */
-	STRLEN cached_len = got_p + got_len - prune_from;
+	Size_t cached_len = got_p + got_len - prune_from;
 	SV *const cache = datasv;
 
 	if (SvOK(cache)) {

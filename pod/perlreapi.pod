@@ -85,7 +85,7 @@ pattern.  Previous versions of Perl would pass two C<char*> indicating
 the start and end of the stringified pattern; the following snippet can
 be used to get the old parameters:
 
-    STRLEN plen;
+    Size_t plen;
     char*  exp = SvPV(pattern, plen);
     char* xend = exp + plen;
 

@@ -204,7 +204,7 @@
  */
 struct extendable {
 	char *arena;		/* Will hold hash key strings, resized as needed */
-	STRLEN asiz;		/* Size of aforementioned buffer */
+	Size_t asiz;		/* Size of aforementioned buffer */
 	char *aptr;			/* Arena pointer, for in-place read/write ops */
 	char *aend;			/* First invalid address */
 };
@@ -538,7 +538,7 @@ static stcxt_t *Context_ptr = NULL;
 	if (!mbase) {						\
 		TRACEME(("** allocating mbase of %d bytes", MGROW)); \
 		New(10003, mbase, MGROW, char);	\
-		msiz = (STRLEN)MGROW;					\
+		msiz = (Size_t)MGROW;					\
 	}									\
 	mptr = mbase;						\
 	if (x)								\
@@ -2050,7 +2050,7 @@ static int store_scalar(pTHX_ stcxt_t *cxt, SV *sv)
 {
 	IV iv;
 	char *pv;
-	STRLEN len;
+	Size_t len;
 	U32 flags = SvFLAGS(sv);			/* "cc -O" may put it in register */
 
 	TRACEME(("store_scalar (0x%"UVxf")", PTR2UV(sv)));
@@ -2453,7 +2453,7 @@ static int store_hash(pTHX_ stcxt_t *cxt, HV *hv)
 #endif
                         unsigned char flags = 0;
 			char *keyval;
-			STRLEN keylen_tmp;
+			Size_t keylen_tmp;
                         I32 keylen;
 			SV *key = av_shift(av);
 			/* This will fail if key is a placeholder.
@@ -2523,8 +2523,8 @@ static int store_hash(pTHX_ stcxt_t *cxt, HV *hv)
                             const char *keysave = keyval;
                             bool is_utf8 = TRUE;
 
-                            /* Just casting the &klen to (STRLEN) won't work
-                               well if STRLEN and I32 are of different widths.
+                            /* Just casting the &klen to (Size_t) won't work
+                               well if Size_t and I32 are of different widths.
                                --jhi */
                             keyval = (char*)bytes_from_utf8((U8*)keyval,
                                                             &keylen_tmp,
@@ -2968,7 +2968,7 @@ static int store_hook(
 {
 	I32 len;
 	char *classname;
-	STRLEN len2;
+	Size_t len2;
 	SV *ref;
 	AV *av;
 	SV **ary;
@@ -3302,7 +3302,7 @@ check_done:
 
 	/* <len2> <frozen-str> */
 	if (flags & SHF_LARGE_STRLEN) {
-		I32 wlen2 = len2;		/* STRLEN might be 8 bytes */
+		I32 wlen2 = len2;		/* Size_t might be 8 bytes */
 		WLEN(wlen2);			/* Must write an I32 for 64-bit machines */
 	} else {
 		unsigned char clen = (unsigned char) len2;
@@ -5430,7 +5430,7 @@ static SV *retrieve_hash(pTHX_ stcxt_t *cxt, const char *cname)
 		 */
 
 		RLEN(size);						/* Get key size */
-		KBUFCHK((STRLEN)size);					/* Grow hash key read pool if needed */
+		KBUFCHK((Size_t)size);					/* Grow hash key read pool if needed */
 		if (size)
 			READ(kbuf, size);
 		kbuf[size] = '\0';				/* Mark string end, just in case */
@@ -5563,7 +5563,7 @@ static SV *retrieve_flag_hash(pTHX_ stcxt_t *cxt, const char *cname)
 #endif
 
             RLEN(size);						/* Get key size */
-            KBUFCHK((STRLEN)size);				/* Grow hash key read pool if needed */
+            KBUFCHK((Size_t)size);				/* Grow hash key read pool if needed */
             if (size)
                 READ(kbuf, size);
             kbuf[size] = '\0';				/* Mark string end, just in case */
@@ -5857,7 +5857,7 @@ static SV *old_retrieve_hash(pTHX_ stcxt_t *cxt, const char *cname)
 		if (c != SX_KEY)
 			(void) retrieve_other(aTHX_ (stcxt_t *) 0, 0);	/* Will croak out */
 		RLEN(size);						/* Get key size */
-		KBUFCHK((STRLEN)size);					/* Grow hash key read pool if needed */
+		KBUFCHK((Size_t)size);					/* Grow hash key read pool if needed */
 		if (size)
 			READ(kbuf, size);
 		kbuf[size] = '\0';				/* Mark string end, just in case */
@@ -5920,8 +5920,8 @@ static SV *magic_check(pTHX_ stcxt_t *cxt)
     if (cxt->fio) {
         /* This includes the '\0' at the end.  I want to read the extra byte,
            which is usually going to be the major version number.  */
-        STRLEN len = sizeof(magicstr);
-        STRLEN old_len;
+        Size_t len = sizeof(magicstr);
+        Size_t old_len;
 
         READ(buf, (SSize_t)(len));	/* Not null-terminated */
 
@@ -6218,7 +6218,7 @@ first_time:		/* Will disappear when support for old format is dropped */
 			default:
 				return (SV *) 0;		/* Failed */
 			}
-			KBUFCHK((STRLEN)len);			/* Grow buffer as necessary */
+			KBUFCHK((Size_t)len);			/* Grow buffer as necessary */
 			if (len)
 				READ(kbuf, len);
 			kbuf[len] = '\0';			/* Mark string end */
@@ -6300,7 +6300,7 @@ static SV *do_retrieve(
 	if (!f && in) {
 #ifdef SvUTF8_on
 		if (SvUTF8(in)) {
-			STRLEN length;
+			Size_t length;
 			const char *orig = SvPV(in, length);
 			char *asbytes;
 			/* This is quite deliberate. I want the UTF8 routines
@@ -6308,11 +6308,11 @@ static SV *do_retrieve(
 			   of all scalars, so that any new string also has
 			   this.
 			*/
-			STRLEN klen_tmp = length + 1;
+			Size_t klen_tmp = length + 1;
 			bool is_utf8 = TRUE;
 
-			/* Just casting the &klen to (STRLEN) won't work
-			   well if STRLEN and I32 are of different widths.
+			/* Just casting the &klen to (Size_t) won't work
+			   well if Size_t and I32 are of different widths.
 			   --jhi */
 			asbytes = (char*)bytes_from_utf8((U8*)orig,
 							 &klen_tmp,

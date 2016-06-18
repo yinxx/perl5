@@ -1730,7 +1730,7 @@ Perl now exports the functions C<PerlIO_find_layer> and C<PerlIO_list_alloc>.
 =item *
 
 C<PL_na> has been exterminated from the core code, replaced by local
-STRLEN temporaries, or C<*_nolen()> calls. Either approach is faster than
+Size_t temporaries, or C<*_nolen()> calls. Either approach is faster than
 C<PL_na>, which is a pointer dereference into the interpreter structure
 under ithreads, and a global variable otherwise.
 

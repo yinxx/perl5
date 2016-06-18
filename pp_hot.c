@@ -259,7 +259,7 @@ PP(pp_concat)
   {
     dPOPTOPssrl;
     bool lbyte;
-    STRLEN rlen;
+    Size_t rlen;
     const char *rpv = NULL;
     bool rbyte = FALSE;
     bool rcopied = FALSE;
@@ -273,7 +273,7 @@ PP(pp_concat)
     }
 
     if (TARG != left) { /* not $l .= $r */
-        STRLEN llen;
+        Size_t llen;
         const char* const lpv = SvPV_nomg_const(left, llen);
 	lbyte = !DO_UTF8(left);
 	sv_setpvn(TARG, lpv, llen);
@@ -847,7 +847,7 @@ PP(pp_pushre)
     dSP;
 #ifdef DEBUGGING
     /*
-     * We ass_u_me that LvTARGOFF() comes first, and that two STRLENs
+     * We ass_u_me that LvTARGOFF() comes first, and that two Size_ts
      * will be enough to hold an OP*.
      */
     SV* const sv = sv_newmortal();
@@ -1720,7 +1720,7 @@ PP(pp_match)
     REGEXP *rx = PM_GETRE(pm);
     bool rxtainted;
     const U8 gimme = GIMME_V;
-    STRLEN len;
+    Size_t len;
     const I32 oldsave = PL_savestack_ix;
     I32 had_zerolen = 0;
     MAGIC *mg = NULL;
@@ -1770,7 +1770,7 @@ PP(pp_match)
 	rx = PM_GETRE(pm);
     }
 
-    if (RX_MINLEN(rx) >= 0 && (STRLEN)RX_MINLEN(rx) > len) {
+    if (RX_MINLEN(rx) >= 0 && (Size_t)RX_MINLEN(rx) > len) {
         DEBUG_r(PerlIO_printf(Perl_debug_log, "String shorter than min possible regex match (%"
                                               UVuf" < %"IVdf")\n",
                                               (UV)len, (IV)RX_MINLEN(rx)));
@@ -1906,8 +1906,8 @@ Perl_do_readline(pTHX)
 {
     dSP; dTARGETSTACKED;
     SV *sv;
-    STRLEN tmplen = 0;
-    STRLEN offset;
+    Size_t tmplen = 0;
+    Size_t offset;
     PerlIO *fp;
     IO * const io = GvIO(PL_last_in_gv);
     const I32 type = PL_op->op_type;
@@ -2083,7 +2083,7 @@ Perl_do_readline(pTHX)
 	} else if (SvUTF8(sv)) { /* OP_READLINE, OP_RCATLINE */
 	     if (ckWARN(WARN_UTF8)) {
 		const U8 * const s = (const U8*)SvPVX_const(sv) + offset;
-		const STRLEN len = SvCUR(sv) - offset;
+		const Size_t len = SvCUR(sv) - offset;
 		const U8 *f;
 
 		if (!is_utf8_string_loc(s, len, &f))
@@ -2102,7 +2102,7 @@ Perl_do_readline(pTHX)
 	}
 	else if (gimme == G_SCALAR && !tmplen && SvLEN(sv) - SvCUR(sv) > 80) {
 	    /* try to reclaim a bit of scalar space (only on 1st alloc) */
-	    const STRLEN new_len
+	    const Size_t new_len
 		= SvCUR(sv) < 60 ? 80 : SvCUR(sv)+40; /* allow some slop */
 	    SvPV_renew(sv, new_len);
 	}
@@ -2650,7 +2650,7 @@ PP(pp_iter)
         SV *end = cx->blk_loop.state_u.lazysv.end;
         /* If the maximum is !SvOK(), pp_enteriter substitutes PL_sv_no.
            It has SvPVX of "" and SvCUR of 0, which is what we want.  */
-        STRLEN maxlen = 0;
+        Size_t maxlen = 0;
         const char *max = SvPV_const(end, maxlen);
         if (UNLIKELY(SvNIOK(cur) || SvCUR(cur) > maxlen))
             goto retno;
@@ -2880,7 +2880,7 @@ PP(pp_subst)
     char *s;
     char *strend;
     const char *c;
-    STRLEN clen;
+    Size_t clen;
     SSize_t iters = 0;
     SSize_t maxiters;
     bool once;
@@ -2889,10 +2889,10 @@ PP(pp_subst)
     char *orig;
     U8 r_flags;
     REGEXP *rx = PM_GETRE(pm);
-    STRLEN len;
+    Size_t len;
     int force_on_match = 0;
     const I32 oldsave = PL_savestack_ix;
-    STRLEN slen;
+    Size_t slen;
     bool doutf8 = FALSE; /* whether replacement is in utf8 */
 #ifdef PERL_ANY_COW
     bool was_cow;
@@ -3746,7 +3746,7 @@ PP(pp_entersub)
             }
             else {
                 const char *sym;
-                STRLEN len;
+                Size_t len;
                 if (UNLIKELY(!SvOK(sv)))
                     DIE(aTHX_ PL_no_usym, "a subroutine");
 
@@ -4172,7 +4172,7 @@ S_opmethod_stash(pTHX_ SV* meth)
     else {
 	/* this isn't a reference */
 	GV* iogv;
-        STRLEN packlen;
+        Size_t packlen;
         const char * const packname = SvPV_nomg_const(sv, packlen);
         const U32 packname_utf8 = SvUTF8(sv);
         stash = gv_stashpvn(packname, packlen, packname_utf8 | GV_CACHE_ONLY);

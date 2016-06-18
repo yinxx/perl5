@@ -75,7 +75,7 @@ typedef PerlIOl *PerlIO;
 
 PERL_CALLCONV void PerlIO_define_layer(pTHX_ PerlIO_funcs *tab);
 PERL_CALLCONV PerlIO_funcs *PerlIO_find_layer(pTHX_ const char *name,
-                                              STRLEN len,
+                                              Size_t len,
 				              int load);
 PERL_CALLCONV PerlIO *PerlIO_push(pTHX_ PerlIO *f, PERLIO_FUNCS_DECL(*tab),
 			          const char *mode, SV *arg);

@@ -422,7 +422,7 @@ PP(pp_warn)
 {
     dSP; dMARK;
     SV *exsv;
-    STRLEN len;
+    Size_t len;
     if (SP - MARK > 1) {
 	dTARGET;
 	do_join(TARG, &PL_sv_no, MARK, SP);
@@ -471,7 +471,7 @@ PP(pp_die)
 {
     dSP; dMARK;
     SV *exsv;
-    STRLEN len;
+    Size_t len;
 #ifdef VMS
     VMSISH_HUSHED  =
 	VMSISH_HUSHED || (PL_curcop->op_private & OPpHUSH_VMSISH);
@@ -616,7 +616,7 @@ PP(pp_open)
     SV *sv;
     IO *io;
     const char *tmps;
-    STRLEN len;
+    Size_t len;
     bool  ok;
 
     GV * const gv = MUTABLE_GV(*++MARK);
@@ -855,7 +855,7 @@ PP(pp_binmode)
 
     PUTBACK;
     {
-	STRLEN len = 0;
+	Size_t len = 0;
 	const char *d = NULL;
 	int mode;
 	if (discp)
@@ -1495,7 +1495,7 @@ PP(pp_leavewrite)
 		s++;
 	    }
 	    if (s) {
-		const STRLEN save = SvCUR(PL_formtarget);
+		const Size_t save = SvCUR(PL_formtarget);
 		SvCUR_set(PL_formtarget, s - SvPVX_const(PL_formtarget));
 		do_print(PL_formtarget, ofp);
 		SvCUR_set(PL_formtarget, save);
@@ -1630,7 +1630,7 @@ PP(pp_sysopen)
     const int mode = POPi;
     SV * const sv = POPs;
     GV * const gv = MUTABLE_GV(POPs);
-    STRLEN len;
+    Size_t len;
 
     /* Need TIEHANDLE method ? */
     const char * const tmps = SvPV_const(sv, len);
@@ -1653,19 +1653,19 @@ PP(pp_sysread)
     SSize_t offset;
     IO *io;
     char *buffer;
-    STRLEN orig_size;
+    Size_t orig_size;
     SSize_t length;
     SSize_t count;
     SV *bufsv;
-    STRLEN blen;
+    Size_t blen;
     int fp_utf8;
     int buffer_utf8;
     SV *read_target;
     Size_t got = 0;
     Size_t wanted;
     bool charstart = FALSE;
-    STRLEN charskip = 0;
-    STRLEN skip = 0;
+    Size_t charskip = 0;
+    Size_t skip = 0;
     GV * const gv = MUTABLE_GV(*++MARK);
     int fd;
 
@@ -1744,7 +1744,7 @@ PP(pp_sysread)
 	if (bufsize >= 256)
 	    bufsize = 255;
 #endif
-	buffer = SvGROW(bufsv, (STRLEN)(length+1));
+	buffer = SvGROW(bufsv, (Size_t)(length+1));
 	/* 'offset' means 'flags' here */
 	count = PerlSock_recvfrom(fd, buffer, length, offset,
 				  (struct sockaddr *)namebuf, &bufsize);
@@ -1799,7 +1799,7 @@ PP(pp_sysread)
        unduly.
        (should be 2 * length + offset + 1, or possibly something longer if
        IN_ENCODING Is true) */
-    buffer  = SvGROW(bufsv, (STRLEN)(length+offset+1));
+    buffer  = SvGROW(bufsv, (Size_t)(length+offset+1));
     if (offset > 0 && offset > (SSize_t)orig_size) { /* Zero any newly allocated space */
     	Zero(buffer+orig_size, offset-orig_size, char);
     }
@@ -1816,7 +1816,7 @@ PP(pp_sysread)
 
 	read_target = sv_newmortal();
 	SvUPGRADE(read_target, SVt_PV);
-	buffer = SvGROW(read_target, (STRLEN)(length + 1));
+	buffer = SvGROW(read_target, (Size_t)(length + 1));
     }
 
     if (PL_op->op_type == OP_SYSREAD) {
@@ -1917,8 +1917,8 @@ PP(pp_syswrite)
     SV *bufsv;
     const char *buffer;
     SSize_t retval;
-    STRLEN blen;
-    STRLEN orig_blen_bytes;
+    Size_t blen;
+    Size_t orig_blen_bytes;
     const int op_type = PL_op->op_type;
     bool doing_utf8;
     U8 *tmpbuf = NULL;
@@ -1979,7 +1979,7 @@ PP(pp_syswrite)
 	}
     }
     else if (doing_utf8) {
-	STRLEN tmplen = blen;
+	Size_t tmplen = blen;
 	U8 * const result = bytes_from_utf8((const U8*) buffer, &tmplen, &doing_utf8);
 	if (!doing_utf8) {
 	    tmpbuf = result;
@@ -1996,7 +1996,7 @@ PP(pp_syswrite)
     if (op_type == OP_SEND) {
 	const int flags = SvIVx(*++MARK);
 	if (SP > MARK) {
-	    STRLEN mlen;
+	    Size_t mlen;
 	    char * const sockbuf = SvPVx(*++MARK, mlen);
 	    retval = PerlSock_sendto(fd, buffer, blen,
 				     flags, (struct sockaddr *)sockbuf, mlen);
@@ -2009,7 +2009,7 @@ PP(pp_syswrite)
 #endif
     {
 	Size_t length = 0; /* This length is in characters.  */
-	STRLEN blen_chars;
+	Size_t blen_chars;
 	IV offset;
 
 	if (doing_utf8) {
@@ -2393,8 +2393,8 @@ PP(pp_ioctl)
     }
 
     if (SvPOK(argsv) || !SvNIOK(argsv)) {
-	STRLEN len;
-	STRLEN need;
+	Size_t len;
+	Size_t need;
 	s = SvPV_force(argsv, len);
 	need = IOCPARM_LEN(func);
 	if (len < need) {
@@ -2580,7 +2580,7 @@ PP(pp_bind)
     const char *addr;
     GV * const gv = MUTABLE_GV(POPs);
     IO * const io = GvIOn(gv);
-    STRLEN len;
+    Size_t len;
     int op_type;
     int fd;
 
@@ -2770,7 +2770,7 @@ PP(pp_ssockopt)
 	    SETSOCKOPT_OPTION_VALUE_T buf;
 	    int aint;
 	    if (SvPOKp(sv)) {
-		STRLEN l;
+		Size_t l;
 		buf = (SETSOCKOPT_OPTION_VALUE_T) SvPV_const(sv, l);
 		len = l;
 	    }
@@ -3386,7 +3386,7 @@ PP(pp_fttty)
     int fd;
     GV *gv;
     char *name = NULL;
-    STRLEN namelen;
+    Size_t namelen;
     UV uv;
 
     tryAMAGICftest_MG('t');
@@ -3943,7 +3943,7 @@ S_dooneliner(pTHX_ const char *cmd, const char *filename)
 PP(pp_mkdir)
 {
     dSP; dTARGET;
-    STRLEN len;
+    Size_t len;
     const char *tmps;
     bool copy = FALSE;
     const unsigned int mode = (MAXARG > 1 && (TOPs||((void)POPs,0))) ? POPu : 0777;
@@ -3970,7 +3970,7 @@ PP(pp_mkdir)
 PP(pp_rmdir)
 {
     dSP; dTARGET;
-    STRLEN len;
+    Size_t len;
     const char *tmps;
     bool copy = FALSE;
 
@@ -4982,7 +4982,7 @@ PP(pp_ghostent)
 #ifdef HAS_GETHOSTBYADDR
 	const int addrtype = POPi;
 	SV * const addrsv = POPs;
-	STRLEN addrlen;
+	Size_t addrlen;
 	const char *addr = (char *)SvPVbyte(addrsv, addrlen);
 
 	hent = PerlSock_gethostbyaddr(addr, (Netdb_hlen_t) addrlen, addrtype);

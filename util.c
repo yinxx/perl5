@@ -126,7 +126,7 @@ S_maybe_protect_ro(pTHX_ struct perl_memory_debug_header *header)
 /* paranoid version of system's malloc() */
 
 Malloc_t
-Perl_safesysmalloc(MEM_SIZE size)
+Perl_safesysmalloc(Size_t size)
 {
 #ifdef ALWAYS_NEED_THX
     dTHX;
@@ -203,14 +203,14 @@ Perl_safesysmalloc(MEM_SIZE size)
 /* paranoid version of system's realloc() */
 
 Malloc_t
-Perl_safesysrealloc(Malloc_t where,MEM_SIZE size)
+Perl_safesysrealloc(Malloc_t where,Size_t size)
 {
 #ifdef ALWAYS_NEED_THX
     dTHX;
 #endif
     Malloc_t ptr;
 #ifdef PERL_DEBUG_READONLY_COW
-    const MEM_SIZE oldsize = where
+    const Size_t oldsize = where
 	? ((struct perl_memory_debug_header *)((char *)where - PERL_MEMORY_DEBUG_HEADER_SIZE))->size
 	: 0;
 #endif
@@ -244,7 +244,7 @@ Perl_safesysrealloc(Malloc_t where,MEM_SIZE size)
 	    assert(header->prev->next == header);
 #  ifdef PERL_POISON
 	    if (header->size > size) {
-		const MEM_SIZE freed_up = header->size - size;
+		const Size_t freed_up = header->size - size;
 		char *start_of_freed = ((char *)where) + size;
 		PoisonFree(start_of_freed, freed_up, char);
 	    }
@@ -285,7 +285,7 @@ Perl_safesysrealloc(Malloc_t where,MEM_SIZE size)
 
 #  ifdef PERL_POISON
 	    if (header->size < size) {
-		const MEM_SIZE fresh = size - header->size;
+		const Size_t fresh = size - header->size;
 		char *start_of_fresh = ((char *)ptr) + size;
 		PoisonNew(start_of_fresh, fresh, char);
 	    }
@@ -342,7 +342,7 @@ Perl_safesysfree(Malloc_t where)
 		= (struct perl_memory_debug_header *)where_intrn;
 
 # ifdef MDH_HAS_SIZE
-	    const MEM_SIZE size = header->size;
+	    const Size_t size = header->size;
 # endif
 # ifdef PERL_TRACK_MEMPOOL
 	    if (header->interpreter != aTHX) {
@@ -393,18 +393,18 @@ Perl_safesysfree(Malloc_t where)
 /* safe version of system's calloc() */
 
 Malloc_t
-Perl_safesyscalloc(MEM_SIZE count, MEM_SIZE size)
+Perl_safesyscalloc(Size_t count, Size_t size)
 {
 #ifdef ALWAYS_NEED_THX
     dTHX;
 #endif
     Malloc_t ptr;
 #if defined(USE_MDH) || defined(DEBUGGING)
-    MEM_SIZE total_size = 0;
+    Size_t total_size = 0;
 #endif
 
     /* Even though calloc() for zero bytes is strange, be robust. */
-    if (size && (count <= MEM_SIZE_MAX / size)) {
+    if (size && (count <= Size_t_MAX / size)) {
 #if defined(USE_MDH) || defined(DEBUGGING)
 	total_size = size * count;
 #endif
@@ -412,7 +412,7 @@ Perl_safesyscalloc(MEM_SIZE count, MEM_SIZE size)
     else
 	croak_memory_wrap();
 #ifdef USE_MDH
-    if (PERL_MEMORY_DEBUG_HEADER_SIZE <= MEM_SIZE_MAX - (MEM_SIZE)total_size)
+    if (PERL_MEMORY_DEBUG_HEADER_SIZE <= Size_t_MAX - (Size_t)total_size)
 	total_size += PERL_MEMORY_DEBUG_HEADER_SIZE;
     else
 	croak_memory_wrap();
@@ -488,7 +488,7 @@ Perl_safesyscalloc(MEM_SIZE count, MEM_SIZE size)
 
 #ifndef MYMALLOC
 
-Malloc_t Perl_malloc (MEM_SIZE nbytes)
+Malloc_t Perl_malloc (Size_t nbytes)
 {
 #ifdef PERL_IMPLICIT_SYS
     dTHX;
@@ -496,7 +496,7 @@ Malloc_t Perl_malloc (MEM_SIZE nbytes)
     return (Malloc_t)PerlMem_malloc(nbytes);
 }
 
-Malloc_t Perl_calloc (MEM_SIZE elements, MEM_SIZE size)
+Malloc_t Perl_calloc (Size_t elements, Size_t size)
 {
 #ifdef PERL_IMPLICIT_SYS
     dTHX;
@@ -504,7 +504,7 @@ Malloc_t Perl_calloc (MEM_SIZE elements, MEM_SIZE size)
     return (Malloc_t)PerlMem_calloc(elements, size);
 }
 
-Malloc_t Perl_realloc (Malloc_t where, MEM_SIZE nbytes)
+Malloc_t Perl_realloc (Malloc_t where, Size_t nbytes)
 {
 #ifdef PERL_IMPLICIT_SYS
     dTHX;
@@ -677,11 +677,11 @@ void
 Perl_fbm_compile(pTHX_ SV *sv, U32 flags)
 {
     const U8 *s;
-    STRLEN i;
-    STRLEN len;
+    Size_t i;
+    Size_t len;
     U32 frequency = 256;
     MAGIC *mg;
-    PERL_DEB( STRLEN rarest = 0 );
+    PERL_DEB( Size_t rarest = 0 );
 
     PERL_ARGS_ASSERT_FBM_COMPILE;
 
@@ -795,16 +795,16 @@ char *
 Perl_fbm_instr(pTHX_ unsigned char *big, unsigned char *bigend, SV *littlestr, U32 flags)
 {
     unsigned char *s;
-    STRLEN l;
+    Size_t l;
     const unsigned char *little = (const unsigned char *)SvPV_const(littlestr,l);
-    STRLEN littlelen = l;
+    Size_t littlelen = l;
     const I32 multiline = flags & FBMrf_MULTILINE;
 
     PERL_ARGS_ASSERT_FBM_INSTR;
 
-    if ((STRLEN)(bigend - big) < littlelen) {
+    if ((Size_t)(bigend - big) < littlelen) {
 	if ( SvTAIL(littlestr)
-	     && ((STRLEN)(bigend - big) == littlelen - 1)
+	     && ((Size_t)(bigend - big) == littlelen - 1)
 	     && (littlelen == 1
 		 || (*big == *little &&
 		     memEQ((char *)big, (char *)little, littlelen - 1))))
@@ -951,7 +951,7 @@ Perl_fbm_instr(pTHX_ unsigned char *big, unsigned char *bigend, SV *littlestr, U
     }
 
     /* Do actual FBM.  */
-    if (littlelen > (STRLEN)(bigend - big))
+    if (littlelen > (Size_t)(bigend - big))
 	return NULL;
 
     {
@@ -1128,7 +1128,7 @@ Perl_savepv(pTHX_ const char *pv)
 	return NULL;
     else {
 	char *newaddr;
-	const STRLEN pvlen = strlen(pv)+1;
+	const Size_t pvlen = strlen(pv)+1;
 	Newx(newaddr, pvlen, char);
 	return (char*)memcpy(newaddr, pv, pvlen);
     }
@@ -1184,7 +1184,7 @@ char *
 Perl_savesharedpv(pTHX_ const char *pv)
 {
     char *newaddr;
-    STRLEN pvlen;
+    Size_t pvlen;
 
     PERL_UNUSED_CONTEXT;
 
@@ -1209,7 +1209,7 @@ pointer is not acceptable)
 =cut
 */
 char *
-Perl_savesharedpvn(pTHX_ const char *const pv, const STRLEN len)
+Perl_savesharedpvn(pTHX_ const char *const pv, const Size_t len)
 {
     char *const newaddr = (char*)PerlMemShared_malloc(len + 1);
 
@@ -1239,7 +1239,7 @@ need to use the shared memory functions, such as C<L</savesharedsvpv>>.
 char *
 Perl_savesvpv(pTHX_ SV *sv)
 {
-    STRLEN len;
+    Size_t len;
     const char * const pv = SvPV_const(sv, len);
     char *newaddr;
 
@@ -1262,7 +1262,7 @@ memory which is shared between threads.
 char *
 Perl_savesharedsvpv(pTHX_ SV *sv)
 {
-    STRLEN len;
+    Size_t len;
     const char * const pv = SvPV_const(sv, len);
 
     PERL_ARGS_ASSERT_SAVESHAREDSVPV;
@@ -1516,7 +1516,7 @@ Perl_mess_sv(pTHX_ SV *basemsg, bool consume)
 	if (GvIO(PL_last_in_gv) && (SvTYPE(GvIOp(PL_last_in_gv)) == SVt_PVIO)
 		&& IoLINES(GvIOp(PL_last_in_gv)))
 	{
-	    STRLEN l;
+	    Size_t l;
 	    const bool line_mode = (RsSIMPLE(PL_rs) &&
 				   *SvPV_const(PL_rs,l) == '\n' && l == 1);
 	    Perl_sv_catpvf(aTHX_ sv, ", <%"SVf"> %s %"IVdf,
@@ -2107,15 +2107,15 @@ S_ckwarn_common(pTHX_ U32 w)
 }
 
 /* Set buffer=NULL to get a new one.  */
-STRLEN *
-Perl_new_warnings_bitfield(pTHX_ STRLEN *buffer, const char *const bits,
-			   STRLEN size) {
-    const MEM_SIZE len_wanted =
-	sizeof(STRLEN) + (size > WARNsize ? size : WARNsize);
+Size_t *
+Perl_new_warnings_bitfield(pTHX_ Size_t *buffer, const char *const bits,
+			   Size_t size) {
+    const Size_t len_wanted =
+	sizeof(Size_t) + (size > WARNsize ? size : WARNsize);
     PERL_UNUSED_CONTEXT;
     PERL_ARGS_ASSERT_NEW_WARNINGS_BITFIELD;
 
-    buffer = (STRLEN*)
+    buffer = (Size_t*)
 	(specialWARN(buffer) ?
 	 PerlMemShared_malloc(len_wanted) :
 	 PerlMemShared_realloc(buffer, len_wanted));
@@ -4939,7 +4939,7 @@ S_mem_log_common(enum mem_log_type mlt, const UV n,
 	 * probably that they would be used to fill in the struct
 	 * timeval. */
 	{
-	    STRLEN len;
+	    Size_t len;
             const char* endptr;
 	    int fd;
             UV uv;
@@ -5116,7 +5116,7 @@ See also L</quadmath_format_needed>.
 const char*
 Perl_quadmath_format_single(const char* format)
 {
-    STRLEN len;
+    Size_t len;
 
     PERL_ARGS_ASSERT_QUADMATH_FORMAT_SINGLE;
 
@@ -5641,7 +5641,7 @@ Perl_xs_handshake(const U32 key, void * v_my_perl, const char * file, ...)
 
 STATIC void
 S_xs_version_bootcheck(pTHX_ U32 items, U32 ax, const char *xs_p,
-			  STRLEN xs_len)
+			  Size_t xs_len)
 {
     SV *sv;
     const char *vn = NULL;
@@ -6014,10 +6014,10 @@ static void bfd_update(bfd_context* ctx, Dl_info* dl_info)
 static void bfd_symbolize(bfd_context* ctx,
                           void* raw_frame,
                           char** symbol_name,
-                          STRLEN* symbol_name_size,
+                          Size_t* symbol_name_size,
                           char** source_name,
-                          STRLEN* source_name_size,
-                          STRLEN* source_line)
+                          Size_t* source_name_size,
+                          Size_t* source_line)
 {
     *symbol_name = NULL;
     *symbol_name_size = 0;
@@ -6143,8 +6143,8 @@ static void atos_update(atos_context* ctx,
  * and returning non-NULL if possible, returning NULL otherwise. */
 static const char* atos_parse(const char* p,
                               const char* start,
-                              STRLEN* source_name_size,
-                              STRLEN* source_line) {
+                              Size_t* source_name_size,
+                              Size_t* source_line) {
     /* atos() output is something like:
      * perl_parse (in miniperl) (perl.c:2314)\n\n".
      * We cannot use Perl regular expressions, because we need to
@@ -6189,7 +6189,7 @@ static const char* atos_parse(const char* p,
         && source_line_end == close_paren
         && uv <= PERL_INT_MAX
     ) {
-        *source_line = (STRLEN)uv;
+        *source_line = (Size_t)uv;
         return p;
     }
     return NULL;
@@ -6202,8 +6202,8 @@ static const char* atos_parse(const char* p,
 static void atos_symbolize(atos_context* ctx,
                            void* raw_frame,
                            char** source_name,
-                           STRLEN* source_name_size,
-                           STRLEN* source_line)
+                           Size_t* source_name_size,
+                           Size_t* source_line)
 {
     char cmd[1024];
     const char* p;
@@ -6313,8 +6313,8 @@ Perl_get_c_backtrace(pTHX_ int depth, int skip)
 
     /* Sizes _including_ the terminating \0 of the object name
      * and symbol name strings. */
-    STRLEN* object_name_sizes;
-    STRLEN* symbol_name_sizes;
+    Size_t* object_name_sizes;
+    Size_t* symbol_name_sizes;
 
 #ifdef USE_BFD
     /* The symbol names comes either from dli_sname,
@@ -6324,8 +6324,8 @@ Perl_get_c_backtrace(pTHX_ int depth, int skip)
 
     /* The source code location information.  Dug out with e.g. BFD. */
     char** source_names;
-    STRLEN* source_name_sizes;
-    STRLEN* source_lines;
+    Size_t* source_name_sizes;
+    Size_t* source_lines;
 
     Perl_c_backtrace* bt = NULL;  /* This is what will be returned. */
     int got_depth; /* How many frames were returned from backtrace(). */
@@ -6347,11 +6347,11 @@ Perl_get_c_backtrace(pTHX_ int depth, int skip)
      * careful about the name strings. */
     Newx(raw_frames, try_depth, void*);
     Newx(dl_infos, try_depth, Dl_info);
-    Newx(object_name_sizes, try_depth, STRLEN);
-    Newx(symbol_name_sizes, try_depth, STRLEN);
+    Newx(object_name_sizes, try_depth, Size_t);
+    Newx(symbol_name_sizes, try_depth, Size_t);
     Newx(source_names, try_depth, char*);
-    Newx(source_name_sizes, try_depth, STRLEN);
-    Newx(source_lines, try_depth, STRLEN);
+    Newx(source_name_sizes, try_depth, Size_t);
+    Newx(source_lines, try_depth, Size_t);
 #ifdef USE_BFD
     Newx(symbol_names, try_depth, char*);
 #endif

@@ -47,8 +47,8 @@ extern Pid_t getpid (void);
     _LIB_VERSION_TYPE _LIB_VERSION = _IEEE_;
 #endif
 
-static const STRLEN small_mu_len = sizeof(GREEK_SMALL_LETTER_MU_UTF8) - 1;
-static const STRLEN capital_iota_len = sizeof(GREEK_CAPITAL_LETTER_IOTA_UTF8) - 1;
+static const Size_t small_mu_len = sizeof(GREEK_SMALL_LETTER_MU_UTF8) - 1;
+static const Size_t capital_iota_len = sizeof(GREEK_CAPITAL_LETTER_IOTA_UTF8) - 1;
 
 /* variations on pp_null */
 
@@ -440,7 +440,7 @@ PP(pp_pos)
 	    const MAGIC * const mg = mg_find_mglob(sv);
 	    if (mg && mg->mg_len != -1) {
 		dTARGET;
-		STRLEN i = mg->mg_len;
+		Size_t i = mg->mg_len;
 		if (mg->mg_flags & MGf_BYTES && DO_UTF8(sv))
 		    i = sv_pos_b2u_flags(sv, i, SV_GMAGIC|SV_CONST_RETURN);
 		SETu(i);
@@ -618,7 +618,7 @@ PP(pp_bless)
     }
     else {
 	SV * const ssv = POPs;
-	STRLEN len;
+	Size_t len;
 	const char *ptr;
 
 	if (!ssv) goto curstash;
@@ -650,7 +650,7 @@ PP(pp_gelem)
     dSP;
 
     SV *sv = POPs;
-    STRLEN len;
+    Size_t len;
     const char * const elem = SvPV_const(sv, len);
     GV * const gv = MUTABLE_GV(TOPs);
     SV * tmpRef = NULL;
@@ -725,7 +725,7 @@ PP(pp_gelem)
 PP(pp_study)
 {
     dSP; dTOPss;
-    STRLEN len;
+    Size_t len;
 
     (void)SvPV(sv, len);
     if (len == 0 || len > I32_MAX || !SvPOK(sv) || SvUTF8(sv) || SvVALID(sv)) {
@@ -759,7 +759,7 @@ PP(pp_trans)
 	}
     }
     if(PL_op->op_type == OP_TRANSR) {
-	STRLEN len;
+	Size_t len;
 	const char * const pv = SvPV(sv,len);
 	SV * const newsv = newSVpvn_flags(pv, len, SVs_TEMP|SvUTF8(sv));
 	do_trans(newsv);
@@ -777,7 +777,7 @@ PP(pp_trans)
 static size_t
 S_do_chomp(pTHX_ SV *retval, SV *sv, bool chomping)
 {
-    STRLEN len;
+    Size_t len;
     char *s;
     size_t count = 0;
 
@@ -837,7 +837,7 @@ S_do_chomp(pTHX_ SV *retval, SV *sv, bool chomping)
 		}
 	    }
 	    else {
-		STRLEN rslen, rs_charlen;
+		Size_t rslen, rs_charlen;
 		const char *rsptr = SvPV_const(PL_rs, rslen);
 
 		rs_charlen = SvUTF8(PL_rs)
@@ -1871,7 +1871,7 @@ PP(pp_repeat)
     }
     else {	/* Note: mark already snarfed by pp_list */
 	SV * const tmpstr = POPs;
-	STRLEN len;
+	Size_t len;
 	bool isutf;
 
 	if (TARG != tmpstr)
@@ -1882,9 +1882,9 @@ PP(pp_repeat)
 	    if (count < 1)
 		SvCUR_set(TARG, 0);
 	    else {
-		STRLEN max;
+		Size_t max;
 
-		if (   len > (MEM_SIZE_MAX-1) / (UV)count /* max would overflow */
+		if (   len > (Size_t_MAX-1) / (UV)count /* max would overflow */
 		    || len > (U32)I32_MAX  /* repeatcpy would overflow */
                 )
 		     Perl_croak(aTHX_ "%s",
@@ -2543,7 +2543,7 @@ PERL_STATIC_INLINE bool
 S_negate_string(pTHX)
 {
     dTARGET; dSP;
-    STRLEN len;
+    Size_t len;
     const char *s;
     SV * const sv = TOPs;
     if (!SvPOKp(sv) || SvNIOK(sv) || (!SvPOK(sv) && SvNIOKp(sv)))
@@ -2619,15 +2619,15 @@ S_scomplement(pTHX_ SV *targ, SV *sv)
 {
 	U8 *tmps;
 	I32 anum;
-	STRLEN len;
+	Size_t len;
 
 	sv_copypv_nomg(TARG, sv);
 	tmps = (U8*)SvPV_nomg(TARG, len);
 	anum = len;
 	if (SvUTF8(TARG)) {
 	  /* Calculate exact length, let's not estimate. */
-	  STRLEN targlen = 0;
-	  STRLEN l;
+	  Size_t targlen = 0;
+	  Size_t l;
 	  UV nchar = 0;
 	  UV nwide = 0;
 	  U8 * const send = tmps + len;
@@ -3068,7 +3068,7 @@ PP(pp_srand)
     if (MAXARG >= 1 && (TOPs || POPs)) {
         SV *top;
         char *pv;
-        STRLEN len;
+        Size_t len;
         int flags;
 
         top = POPs;
@@ -3190,7 +3190,7 @@ PP(pp_oct)
     dSP; dTARGET;
     const char *tmps;
     I32 flags = PERL_SCAN_ALLOW_UNDERSCORES;
-    STRLEN len;
+    Size_t len;
     NV result_nv;
     UV result_uv;
     SV* const sv = TOPs;
@@ -3253,7 +3253,7 @@ PP(pp_length)
 	    sv_setiv(TARG, (IV)sv_len_utf8_nomg(sv));
 	else
 	{
-	    STRLEN len;
+	    Size_t len;
             /* unrolled SvPV_nomg_const(sv,len) */
             if(SvPOK_nog(sv)){
                 simple_pv:
@@ -3283,10 +3283,10 @@ PP(pp_length)
    always be true for an explicit 0.
 */
 bool
-Perl_translate_substr_offsets( STRLEN curlen, IV pos1_iv,
+Perl_translate_substr_offsets( Size_t curlen, IV pos1_iv,
 				bool pos1_is_uv, IV len_iv,
-				bool len_is_uv, STRLEN *posp,
-				STRLEN *lenp)
+				bool len_is_uv, Size_t *posp,
+				Size_t *lenp)
 {
     IV pos2_iv;
     int    pos2_is_uv;
@@ -3339,8 +3339,8 @@ Perl_translate_substr_offsets( STRLEN curlen, IV pos1_iv,
 	pos2_iv = curlen;
 
     /* pos1_iv and pos2_iv both in 0..curlen, so the cast is safe */
-    *posp = (STRLEN)( (UV)pos1_iv );
-    *lenp = (STRLEN)( (UV)pos2_iv - (UV)pos1_iv );
+    *posp = (Size_t)( (UV)pos1_iv );
+    *lenp = (Size_t)( (UV)pos2_iv - (UV)pos1_iv );
 
     return TRUE;
 }
@@ -3349,8 +3349,8 @@ PP(pp_substr)
 {
     dSP; dTARGET;
     SV *sv;
-    STRLEN curlen;
-    STRLEN utf8_curlen;
+    Size_t curlen;
+    Size_t utf8_curlen;
     SV *   pos_sv;
     IV     pos1_iv;
     int    pos1_is_uv;
@@ -3362,7 +3362,7 @@ PP(pp_substr)
     const char *tmps;
     SV *repl_sv = NULL;
     const char *repl = NULL;
-    STRLEN repl_len;
+    Size_t repl_len;
     int num_args = PL_op->op_private & 7;
     bool repl_need_utf8_upgrade = FALSE;
 
@@ -3392,12 +3392,12 @@ PP(pp_substr)
 	LvTARG(ret) = SvREFCNT_inc_simple(sv);
 	LvTARGOFF(ret) =
 	    pos1_is_uv || pos1_iv >= 0
-		? (STRLEN)(UV)pos1_iv
-		: (LvFLAGS(ret) |= 1, (STRLEN)(UV)-pos1_iv);
+		? (Size_t)(UV)pos1_iv
+		: (LvFLAGS(ret) |= 1, (Size_t)(UV)-pos1_iv);
 	LvTARGLEN(ret) =
 	    len_is_uv || len_iv > 0
-		? (STRLEN)(UV)len_iv
-		: (LvFLAGS(ret) |= 2, (STRLEN)(UV)-len_iv);
+		? (Size_t)(UV)len_iv
+		: (LvFLAGS(ret) |= 2, (Size_t)(UV)-len_iv);
 
 	PUSHs(ret);    /* avoid SvSETMAGIC here */
 	RETURN;
@@ -3431,7 +3431,7 @@ PP(pp_substr)
 	utf8_curlen = 0;
 
     {
-	STRLEN pos, len, byte_len, byte_pos;
+	Size_t pos, len, byte_len, byte_pos;
 
 	if (!translate_substr_offsets(
 		curlen, pos1_iv, pos1_is_uv, len_iv, len_is_uv, &pos, &len
@@ -3522,8 +3522,8 @@ PP(pp_index)
     SV *big;
     SV *little;
     SV *temp = NULL;
-    STRLEN biglen;
-    STRLEN llen = 0;
+    Size_t biglen;
+    Size_t llen = 0;
     SSize_t offset = 0;
     SSize_t retval;
     const char *big_p;
@@ -3649,7 +3649,7 @@ PP(pp_ord)
     dSP; dTARGET;
 
     SV *argsv = TOPs;
-    STRLEN len;
+    Size_t len;
     const U8 *s = (U8*)SvPV_const(argsv, len);
 
     if (IN_ENCODING && SvPOK(argsv) && !DO_UTF8(argsv)) {
@@ -3703,7 +3703,7 @@ PP(pp_chr)
     SvUPGRADE(TARG,SVt_PV);
 
     if (value > 255 && !IN_BYTES) {
-	SvGROW(TARG, (STRLEN)UVCHR_SKIP(value)+1);
+	SvGROW(TARG, (Size_t)UVCHR_SKIP(value)+1);
 	tmps = (char*)uvchr_to_utf8_flags((U8*)SvPVX(TARG), value, 0);
 	SvCUR_set(TARG, tmps - SvPVX_const(TARG));
 	*tmps = '\0';
@@ -3745,7 +3745,7 @@ PP(pp_crypt)
 #ifdef HAS_CRYPT
     dSP; dTARGET;
     dPOPTOPssrl;
-    STRLEN len;
+    Size_t len;
     const char *tmps = SvPV_const(left, len);
 
     if (DO_UTF8(left)) {
@@ -3804,8 +3804,8 @@ PP(pp_ucfirst)
 
     dSP;
     SV *source = TOPs;
-    STRLEN slen; /* slen is the byte length of the whole SV. */
-    STRLEN need;
+    Size_t slen; /* slen is the byte length of the whole SV. */
+    Size_t need;
     SV *dest;
     bool inplace;   /* ? Convert first char only, in-place */
     bool doing_utf8 = FALSE;		   /* ? using utf8 */
@@ -3814,9 +3814,9 @@ PP(pp_ucfirst)
     const U8 *s;
     U8 *d;
     U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
-    STRLEN ulen;    /* ulen is the byte length of the original Unicode character
+    Size_t ulen;    /* ulen is the byte length of the original Unicode character
 		     * stored as UTF-8 at s. */
-    STRLEN tculen;  /* tculen is the byte length of the freshly titlecased (or
+    Size_t tculen;  /* tculen is the byte length of the freshly titlecased (or
 		     * lowercased) character stored in tmpbuf.  May be either
 		     * UTF-8 or not, but in either case is the number of bytes */
 
@@ -4057,8 +4057,8 @@ PP(pp_uc)
 {
     dSP;
     SV *source = TOPs;
-    STRLEN len;
-    STRLEN min;
+    Size_t len;
+    Size_t min;
     SV *dest;
     const U8 *s;
     U8 *d;
@@ -4124,8 +4124,8 @@ PP(pp_uc)
 	bool in_iota_subscript = FALSE;
 
 	while (s < send) {
-	    STRLEN u;
-	    STRLEN ulen;
+	    Size_t u;
+	    Size_t ulen;
 	    UV uv;
 	    if (in_iota_subscript && ! _is_utf8_mark(s)) {
 
@@ -4314,8 +4314,8 @@ PP(pp_lc)
 {
     dSP;
     SV *source = TOPs;
-    STRLEN len;
-    STRLEN min;
+    Size_t len;
+    Size_t min;
     SV *dest;
     const U8 *s;
     U8 *d;
@@ -4354,8 +4354,8 @@ PP(pp_lc)
 	U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
 
 	while (s < send) {
-	    const STRLEN u = UTF8SKIP(s);
-	    STRLEN ulen;
+	    const Size_t u = UTF8SKIP(s);
+	    Size_t ulen;
 
 #ifdef USE_LOCALE_CTYPE
 	    _to_utf8_lower_flags(s, tmpbuf, &ulen, IN_LC_RUNTIME(LC_CTYPE));
@@ -4438,7 +4438,7 @@ PP(pp_quotemeta)
 {
     dSP; dTARGET;
     SV * const sv = TOPs;
-    STRLEN len;
+    Size_t len;
     const char *s = SvPV_const(sv,len);
 
     SvUTF8_off(TARG);				/* decontaminate */
@@ -4449,7 +4449,7 @@ PP(pp_quotemeta)
 	d = SvPVX(TARG);
 	if (DO_UTF8(sv)) {
 	    while (len) {
-		STRLEN ulen = UTF8SKIP(s);
+		Size_t ulen = UTF8SKIP(s);
 		bool to_quote = FALSE;
 
 		if (UTF8_IS_INVARIANT(*s)) {
@@ -4517,8 +4517,8 @@ PP(pp_fc)
     dTARGET;
     dSP;
     SV *source = TOPs;
-    STRLEN len;
-    STRLEN min;
+    Size_t len;
+    Size_t min;
     SV *dest;
     const U8 *s;
     const U8 *send;
@@ -4566,8 +4566,8 @@ PP(pp_fc)
     send = s + len;
     if (DO_UTF8(source)) { /* UTF-8 flagged string. */
         while (s < send) {
-            const STRLEN u = UTF8SKIP(s);
-            STRLEN ulen;
+            const Size_t u = UTF8SKIP(s);
+            Size_t ulen;
 
             _to_utf8_fold_flags(s, tmpbuf, &ulen, flags);
 
@@ -4629,7 +4629,7 @@ PP(pp_fc)
                     d += small_mu_len;
                     s++;
                     for (; s < send; s++) {
-                        STRLEN ulen;
+                        Size_t ulen;
                         UV fc = _to_uni_fold_flags(*s, tmpbuf, &ulen, flags);
                         if UVCHR_IS_INVARIANT(fc) {
                             if (full_folding
@@ -5706,7 +5706,7 @@ PP(pp_reverse)
 	char *down;
 	I32 tmp;
 	dTARGET;
-	STRLEN len;
+	Size_t len;
 
 	SvUTF8_off(TARG);				/* decontaminate */
 	if (SP - MARK > 1)
@@ -5761,7 +5761,7 @@ PP(pp_split)
     AV *ary = PL_op->op_flags & OPf_STACKED ? (AV *)POPs : NULL;
     IV limit = POPi;			/* note, negative is forever */
     SV * const sv = POPs;
-    STRLEN len;
+    Size_t len;
     const char *s = SvPV_const(sv, len);
     const bool do_utf8 = DO_UTF8(sv);
     const char *strend = s + len;
@@ -5770,9 +5770,9 @@ PP(pp_split)
     SV *dstr;
     const char *m;
     SSize_t iters = 0;
-    const STRLEN slen = do_utf8
+    const Size_t slen = do_utf8
                         ? utf8_length((U8*)s, (U8*)strend)
-                        : (STRLEN)(strend - s);
+                        : (Size_t)(strend - s);
     SSize_t maxiters = slen + 10;
     I32 trailing_empty = 0;
     const char *orig;
@@ -6128,7 +6128,7 @@ PP(pp_split)
     /* keep field after final delim? */
     if (s < strend || (iters && origlimit)) {
 	if (!gimme_scalar) {
-	    const STRLEN l = strend - s;
+	    const Size_t l = strend - s;
 	    dstr = newSVpvn_flags(s, l, (do_utf8 ? SVf_UTF8 : 0) | make_mortal);
 	    XPUSHs(dstr);
 	}

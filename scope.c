@@ -485,7 +485,7 @@ Perl_save_I32(pTHX_ I32 *intp)
 }
 
 void
-Perl_save_strlen(pTHX_ STRLEN *ptr)
+Perl_save_strlen(pTHX_ Size_t *ptr)
 {
     dSS_ADD;
 
@@ -595,7 +595,7 @@ Perl_save_delete(pTHX_ HV *hv, char *key, I32 klen)
 void
 Perl_save_hdelete(pTHX_ HV *hv, SV *keysv)
 {
-    STRLEN len;
+    Size_t len;
     I32 klen;
     const char *key;
 
@@ -962,8 +962,8 @@ Perl_leave_scope(pTHX_ I32 base)
 	case SAVEt_INT:				/* int reference */
 	    *(int*)ARG0_PTR = (int)ARG1_I32;
 	    break;
-	case SAVEt_STRLEN:			/* STRLEN/size_t ref */
-	    *(STRLEN*)ARG0_PTR = (STRLEN)arg1.any_iv;
+	case SAVEt_STRLEN:			/* Size_t/size_t ref */
+	    *(Size_t*)ARG0_PTR = (Size_t)arg1.any_iv;
 	    break;
 	case SAVEt_TMPSFLOOR:			/* restore PL_tmps_floor */
 	    PL_tmps_floor = (SSize_t)arg0.any_iv;
@@ -1301,7 +1301,7 @@ Perl_leave_scope(pTHX_ I32 base)
 	    if (!specialWARN(PL_compiling.cop_warnings))
 		PerlMemShared_free(PL_compiling.cop_warnings);
 
-	    PL_compiling.cop_warnings = (STRLEN*)ARG0_PTR;
+	    PL_compiling.cop_warnings = (Size_t*)ARG0_PTR;
 	    break;
 	case SAVEt_PARSER:
 	    parser_free((yy_parser *) ARG0_PTR);

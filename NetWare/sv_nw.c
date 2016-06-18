@@ -14,7 +14,7 @@ Perl_sv_catsv(pTHX_ SV *dstr, SV *sstr)
 }
 
 void
-Perl_sv_catpvn(pTHX_ SV *dsv, const char* sstr, STRLEN slen)
+Perl_sv_catpvn(pTHX_ SV *dsv, const char* sstr, Size_t slen)
 {
     
     sv_catpvn_flags(dsv, sstr, slen, SV_GMAGIC);
@@ -27,7 +27,7 @@ Perl_sv_setsv(pTHX_ SV *dstr, SV *sstr)
 }
 
 char *
-Perl_sv_2pv(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_2pv(pTHX_ SV *sv, Size_t *lp)
 {
     return sv_2pv_flags(sv, lp, SV_GMAGIC);
 }

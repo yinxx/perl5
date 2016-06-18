@@ -524,7 +524,7 @@ Perl_new_version(pTHX_ SV *ver)
     {
 	const MAGIC* const mg = SvVSTRING_mg(ver);
 	if ( mg ) { /* already a v-string */
-	    const STRLEN len = mg->mg_len;
+	    const Size_t len = mg->mg_len;
 	    const char * const version = (const char*)mg->mg_ptr;
 	    char *raw, *under;
 	    static const char underscore[] = "_";
@@ -584,7 +584,7 @@ Perl_upg_version(pTHX_ SV *ver, bool qv)
     if ( (SvUOK(ver) && SvUVX(ver) > VERSION_MAX)
 	   || (SvIOK(ver) && SvIVX(ver) > VERSION_MAX) ) {
 	/* out of bounds [unsigned] integer */
-	STRLEN len;
+	Size_t len;
 	char tbuf[64];
 	len = my_snprintf(tbuf, sizeof(tbuf), "%d", VERSION_MAX);
 	version = savepvn(tbuf, len);
@@ -605,7 +605,7 @@ VER_IV:
 VER_NV:
 #endif
     {
-	STRLEN len;
+	Size_t len;
 
 	/* may get too much accuracy */ 
 	char tbuf[64];
@@ -682,7 +682,7 @@ VER_NV:
     else if ( SvPOK(ver))/* must be a string or something like a string */
 VER_PV:
     {
-	STRLEN len;
+	Size_t len;
 	version = savepvn(SvPV(ver,len), SvCUR(ver));
 	SAVEFREEPV(version);
 #ifndef SvVOK
@@ -691,7 +691,7 @@ VER_PV:
 	if ( len >= 3 && !instr(version,".") && !instr(version,"_")) {
 	    /* may be a v-string */
 	    char *testv = (char *)version;
-	    STRLEN tlen = len;
+	    Size_t tlen = len;
 	    for (tlen=0; tlen < len; tlen++, testv++) {
 		/* if one of the characters is non-text assume v-string */
 		if (testv[0] < ' ') {

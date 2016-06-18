@@ -58,7 +58,7 @@ do_aspawn (SV *really, void **mark, void **sp)
     int  rc;
     char const **a;
     char *tmps,**argv;
-    STRLEN n_a;
+    Size_t n_a;
 
     if (sp<=mark)
         return -1;
@@ -271,7 +271,7 @@ XS(XS_Cygwin_win_to_posix_path)
 {
     dXSARGS;
     int absolute_flag = 0;
-    STRLEN len;
+    Size_t len;
     int err = 0;
     char *src_path;
     char *posix_path;
@@ -367,7 +367,7 @@ XS(XS_Cygwin_posix_to_win_path)
 {
     dXSARGS;
     int absolute_flag = 0;
-    STRLEN len;
+    Size_t len;
     int err = 0;
     char *src_path, *win_path;
     int isutf8 = 0;

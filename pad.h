@@ -228,7 +228,7 @@ The index of the last pad entry.
 The name stored in the pad name struct.  This returns C<NULL> for a target
 slot.
 
-=for apidoc Amx|STRLEN|PadnameLEN|PADNAME pn	
+=for apidoc Amx|Size_t|PadnameLEN|PADNAME pn	
 The length of the name.
 
 =for apidoc Amx|bool|PadnameUTF8|PADNAME pn
@@ -439,11 +439,11 @@ C<po>.  Must be a valid name.  Returns null if not typed.
 Return the stash associated with an C<our> variable.
 Assumes the slot entry is a valid C<our> lexical.
 
-=for apidoc m|STRLEN|PAD_COMPNAME_GEN|PADOFFSET po
+=for apidoc m|Size_t|PAD_COMPNAME_GEN|PADOFFSET po
 The generation number of the name at offset C<po> in the current
 compiling pad (lvalue).
 
-=for apidoc m|STRLEN|PAD_COMPNAME_GEN_set|PADOFFSET po|int gen
+=for apidoc m|Size_t|PAD_COMPNAME_GEN_set|PADOFFSET po|int gen
 Sets the generation number of the name at offset C<po> in the current
 ling pad (lvalue) to C<gen>.
 =cut
@@ -462,7 +462,7 @@ ling pad (lvalue) to C<gen>.
     (SvOURSTASH(PAD_COMPNAME_SV(po)))
 
 #define PAD_COMPNAME_GEN(po) \
-    ((STRLEN)PadnamelistARRAY(PL_comppad_name)[po]->xpadn_gen)
+    ((Size_t)PadnamelistARRAY(PL_comppad_name)[po]->xpadn_gen)
 
 #define PAD_COMPNAME_GEN_set(po, gen) \
     (PadnamelistARRAY(PL_comppad_name)[po]->xpadn_gen = (gen))

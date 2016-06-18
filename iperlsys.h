@@ -479,11 +479,11 @@ typedef char*		(*LPENVGetenv_len)(struct IPerlEnv*,
 #ifdef WIN32
 typedef unsigned long	(*LPEnvOsID)(struct IPerlEnv*);
 typedef char*		(*LPEnvLibPath)(struct IPerlEnv*, WIN32_NO_REGISTRY_M_(const char*)
-					STRLEN *const len);
+					Size_t *const len);
 typedef char*		(*LPEnvSiteLibPath)(struct IPerlEnv*, const char*,
-					    STRLEN *const len);
+					    Size_t *const len);
 typedef char*		(*LPEnvVendorLibPath)(struct IPerlEnv*, const char*,
-					      STRLEN *const len);
+					      Size_t *const len);
 typedef void		(*LPEnvGetChildIO)(struct IPerlEnv*, child_IO_table*);
 #endif
 

@@ -786,11 +786,11 @@ static void	morecore	(int bucket);
 #  if defined(DEBUGGING)
 static void	botch		(const char *diag, const char *s, const char *file, int line);
 #  endif
-static void	add_to_chain	(void *p, MEM_SIZE size, MEM_SIZE chip);
-static void*	get_from_chain	(MEM_SIZE size);
-static void*	get_from_bigger_buckets(int bucket, MEM_SIZE size);
-static union overhead *getpages	(MEM_SIZE needed, int *nblksp, int bucket);
-static int	getpages_adjacent(MEM_SIZE require);
+static void	add_to_chain	(void *p, Size_t size, Size_t chip);
+static void*	get_from_chain	(Size_t size);
+static void*	get_from_bigger_buckets(int bucket, Size_t size);
+static union overhead *getpages	(Size_t needed, int *nblksp, int bucket);
+static int	getpages_adjacent(Size_t require);
 
 #ifdef I_MACH_CTHREADS
 #  undef  MUTEX_LOCK
@@ -944,10 +944,10 @@ static	u_int goodsbrk;
 #  endif
 
 #  ifdef NO_MALLOC_DYNAMIC_CFG
-static MEM_SIZE emergency_buffer_size;
+static Size_t emergency_buffer_size;
 	/* 0 if the last request for more memory succeeded.
 	   Otherwise the size of the failing request. */
-static MEM_SIZE emergency_buffer_last_req;
+static Size_t emergency_buffer_last_req;
 static char *emergency_buffer;
 static char *emergency_buffer_prepared;
 #  endif
@@ -1005,20 +1005,20 @@ get_emergency_buffer(IV *size)
 #  endif
 
 static Malloc_t
-emergency_sbrk(MEM_SIZE size)
+emergency_sbrk(Size_t size)
 {
-    MEM_SIZE rsize = (((size - 1)>>LOG_OF_MIN_ARENA) + 1)<<LOG_OF_MIN_ARENA;
+    Size_t rsize = (((size - 1)>>LOG_OF_MIN_ARENA) + 1)<<LOG_OF_MIN_ARENA;
 
     if (size >= BIG_SIZE
 	&& (!emergency_buffer_last_req ||
-	    (size < (MEM_SIZE)emergency_buffer_last_req))) {
+	    (size < (Size_t)emergency_buffer_last_req))) {
 	/* Give the possibility to recover, but avoid an infinite cycle. */
 	MALLOC_UNLOCK;
 	emergency_buffer_last_req = size;
 	emergency_sbrk_croak("Out of memory during \"large\" request for %"UVuf" bytes, total sbrk() is %"UVuf" bytes", (UV)size, (UV)(goodsbrk + sbrk_slack));
     }
 
-    if ((MEM_SIZE)emergency_buffer_size >= rsize) {
+    if ((Size_t)emergency_buffer_size >= rsize) {
 	char *old = emergency_buffer;
 	
 	emergency_buffer_size -= rsize;
@@ -1192,7 +1192,7 @@ cmp_pat_4bytes(unsigned char *s, size_t nbytes, const unsigned char *fill)
 STATIC int
 S_adjust_size_and_find_bucket(size_t *nbytes_p)
 {
-	MEM_SIZE shiftr;
+	Size_t shiftr;
 	int bucket;
 	size_t nbytes;
 
@@ -1245,7 +1245,7 @@ Perl_malloc(size_t nbytes)
   	int bucket;
 
 #if defined(DEBUGGING) || defined(RCHECK)
-	MEM_SIZE size = nbytes;
+	Size_t size = nbytes;
 #endif
 
 	BARK_64K_LIMIT("Allocation",nbytes,nbytes);
@@ -1364,7 +1364,7 @@ Perl_malloc(size_t nbytes)
 
 static char *last_sbrk_top;
 static char *last_op;			/* This arena can be easily extended. */
-static MEM_SIZE sbrked_remains;
+static Size_t sbrked_remains;
 
 #ifdef DEBUGGING_MSTATS
 static int sbrks;
@@ -1372,7 +1372,7 @@ static int sbrks;
 
 struct chunk_chain_s {
     struct chunk_chain_s *next;
-    MEM_SIZE size;
+    Size_t size;
 };
 static struct chunk_chain_s *chunk_chain;
 static int n_chunks;
@@ -1380,7 +1380,7 @@ static char max_bucket;
 
 /* Cutoff a piece of one of the chunks in the chain.  Prefer smaller chunk. */
 static void *
-get_from_chain(MEM_SIZE size)
+get_from_chain(Size_t size)
 {
     struct chunk_chain_s *elt = chunk_chain, **oldp = &chunk_chain;
     struct chunk_chain_s **oldgoodp = NULL;
@@ -1418,7 +1418,7 @@ get_from_chain(MEM_SIZE size)
 }
 
 static void
-add_to_chain(void *p, MEM_SIZE size, MEM_SIZE chip)
+add_to_chain(void *p, Size_t size, Size_t chip)
 {
     struct chunk_chain_s *next = chunk_chain;
     char *cp = (char*)p;
@@ -1431,7 +1431,7 @@ add_to_chain(void *p, MEM_SIZE size, MEM_SIZE chip)
 }
 
 static void *
-get_from_bigger_buckets(int bucket, MEM_SIZE size)
+get_from_bigger_buckets(int bucket, Size_t size)
 {
     int price = 1;
     static int bucketprice[NBUCKETS];
@@ -1461,20 +1461,20 @@ get_from_bigger_buckets(int bucket, MEM_SIZE size)
 }
 
 static union overhead *
-getpages(MEM_SIZE needed, int *nblksp, int bucket)
+getpages(Size_t needed, int *nblksp, int bucket)
 {
     dVAR;
     /* Need to do (possibly expensive) system call. Try to
        optimize it for rare calling. */
-    MEM_SIZE require = needed - sbrked_remains;
+    Size_t require = needed - sbrked_remains;
     char *cp;
     union overhead *ovp;
-    MEM_SIZE slack = 0;
+    Size_t slack = 0;
 
     if (sbrk_goodness > 0) {
-	if (!last_sbrk_top && require < (MEM_SIZE)FIRST_SBRK) 
+	if (!last_sbrk_top && require < (Size_t)FIRST_SBRK) 
 	    require = FIRST_SBRK;
-	else if (require < (MEM_SIZE)MIN_SBRK) require = MIN_SBRK;
+	else if (require < (Size_t)MIN_SBRK) require = MIN_SBRK;
 
 	if (require < (Size_t)(goodsbrk * MIN_SBRK_FRAC1000 / 1000))
 	    require = goodsbrk * MIN_SBRK_FRAC1000 / 1000;
@@ -1612,7 +1612,7 @@ getpages(MEM_SIZE needed, int *nblksp, int bucket)
 }
 
 static int
-getpages_adjacent(MEM_SIZE require)
+getpages_adjacent(Size_t require)
 {	    
     if (require <= sbrked_remains) {
 	sbrked_remains -= require;
@@ -1662,7 +1662,7 @@ morecore(int bucket)
   	union overhead *ovp;
   	int rnu;       /* 2^rnu bytes will be requested */
   	int nblks;		/* become nblks blocks of the desired size */
-	MEM_SIZE siz, needed;
+	Size_t siz, needed;
 	static int were_called = 0;
 
   	if (nextf[bucket])
@@ -1702,7 +1702,7 @@ morecore(int bucket)
 	    }
 	}
 #endif
-	if (bucket == sizeof(MEM_SIZE)*8*BUCKETS_PER_POW2) {
+	if (bucket == sizeof(Size_t)*8*BUCKETS_PER_POW2) {
 	    MALLOC_UNLOCK;
 	    croak("%s", "Out of memory during ridiculously large request");
 	}
@@ -1714,7 +1714,7 @@ morecore(int bucket)
 		: (bucket >> BUCKET_POW2_SHIFT) );
 	/* This may be overwritten later: */
   	nblks = 1 << (rnu - (bucket >> BUCKET_POW2_SHIFT)); /* how many blocks to get */
-	needed = ((MEM_SIZE)1 << rnu) + POW2_OPTIMIZE_SURPLUS(bucket);
+	needed = ((Size_t)1 << rnu) + POW2_OPTIMIZE_SURPLUS(bucket);
 	if (nextf[rnu << BUCKET_POW2_SHIFT]) { /* 2048b bucket. */
 	    ovp = nextf[rnu << BUCKET_POW2_SHIFT] - 1 + CHUNK_SHIFT;
 	    nextf[rnu << BUCKET_POW2_SHIFT]
@@ -1795,7 +1795,7 @@ Free_t
 Perl_mfree(Malloc_t where)
 {
         dVAR;
-  	MEM_SIZE size;
+  	Size_t size;
 	union overhead *ovp;
 	char *cp = (char*)where;
 #ifdef PACK_MALLOC
@@ -1853,7 +1853,7 @@ Perl_mfree(Malloc_t where)
   	ASSERT(ovp->ov_rmagic == RMAGIC, "chunk's head overwrite");
 	if (OV_INDEX(ovp) <= MAX_SHORT_BUCKET) {
 	    int i;
-	    MEM_SIZE nbytes = ovp->ov_size + 1;
+	    Size_t nbytes = ovp->ov_size + 1;
 
 	    if ((i = nbytes & (RMAGIC_SZ-1))) {
 		i = RMAGIC_SZ - i;
@@ -1891,7 +1891,7 @@ Malloc_t
 Perl_realloc(void *mp, size_t nbytes)
 {
         dVAR;
-  	MEM_SIZE onb;
+  	Size_t onb;
 	union overhead *ovp;
   	char *res;
 	int prev_bucket;
@@ -1901,7 +1901,7 @@ Perl_realloc(void *mp, size_t nbytes)
 	char *cp = (char*)mp;
 
 #ifdef DEBUGGING
-	MEM_SIZE size = nbytes;
+	Size_t size = nbytes;
 
 	if ((long)nbytes < 0)
 	    croak("%s", "panic: realloc");
@@ -2035,7 +2035,7 @@ Perl_realloc(void *mp, size_t nbytes)
 			      (long)size));
 	} else if (incr == 1 && (cp - M_OVERHEAD == last_op) 
 		   && (onb > (1 << LOG_OF_MIN_ARENA))) {
-	    MEM_SIZE require, newarena = nbytes, pow;
+	    Size_t require, newarena = nbytes, pow;
 	    int shiftr;
 
 	    POW2_OPTIMIZE_ADJUST(newarena);
@@ -2056,7 +2056,7 @@ Perl_realloc(void *mp, size_t nbytes)
 		nmalloc[bucket]--;
 		nmalloc[pow * BUCKETS_PER_POW2]++;
 #endif 	    
-		if (pow * BUCKETS_PER_POW2 > (MEM_SIZE)max_bucket)
+		if (pow * BUCKETS_PER_POW2 > (Size_t)max_bucket)
 		    max_bucket = pow * BUCKETS_PER_POW2;
 		*(cp - M_OVERHEAD) = pow * BUCKETS_PER_POW2; /* Fill index. */
 		MALLOC_UNLOCK;
@@ -2074,7 +2074,7 @@ Perl_realloc(void *mp, size_t nbytes)
 	    if ((res = (char*)Perl_malloc(nbytes)) == NULL)
 		return (NULL);
 	    if (cp != res)			/* common optimization */
-		Copy(cp, res, (MEM_SIZE)(nbytes<onb?nbytes:onb), char);
+		Copy(cp, res, (Size_t)(nbytes<onb?nbytes:onb), char);
 	    Perl_mfree(cp);
 	}
   	return ((Malloc_t)res);
@@ -2095,10 +2095,10 @@ Perl_calloc(size_t elements, size_t size)
 char *
 Perl_strdup(const char *s)
 {
-    MEM_SIZE l = strlen(s);
+    Size_t l = strlen(s);
     char *s1 = (char *)Perl_malloc(l+1);
 
-    return (char *)CopyD(s, s1, (MEM_SIZE)(l+1), char);
+    return (char *)CopyD(s, s1, (Size_t)(l+1), char);
 }
 
 int
@@ -2109,7 +2109,7 @@ Perl_putenv(char *a)
   dTHX;
   char *var;
   char *val = a;
-  MEM_SIZE l;
+  Size_t l;
   char buf[80];
 
   while (*val && *val != '=')
@@ -2129,7 +2129,7 @@ Perl_putenv(char *a)
   return 0;
 }
 
-MEM_SIZE
+Size_t
 Perl_malloced_size(void *p)
 {
     union overhead * const ovp = (union overhead *)
@@ -2142,7 +2142,7 @@ Perl_malloced_size(void *p)
     /* The caller wants to have a complete control over the chunk,
        disable the memory checking inside the chunk.  */
     if (bucket <= MAX_SHORT_BUCKET) {
-	const MEM_SIZE size = BUCKET_SIZE_REAL(bucket);
+	const Size_t size = BUCKET_SIZE_REAL(bucket);
 	ovp->ov_size = size + M_OVERHEAD - 1;
 	*((u_int *)((caddr_t)ovp + size + M_OVERHEAD - RMAGIC_SZ)) = RMAGIC;
     }
@@ -2151,7 +2151,7 @@ Perl_malloced_size(void *p)
 }
 
 
-MEM_SIZE
+Size_t
 Perl_malloc_good_size(size_t wanted)
 {
     return BUCKET_SIZE_REAL(adjust_size_and_find_bucket(&wanted));

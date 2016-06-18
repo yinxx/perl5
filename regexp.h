@@ -79,8 +79,8 @@ typedef struct regexp_paren_pair {
 /* record the position of a (?{...}) within a pattern */
 
 struct reg_code_block {
-    STRLEN start;
-    STRLEN end;
+    Size_t start;
+    Size_t end;
     OP     *block;
     REGEXP *src_regex;
 };
@@ -108,7 +108,7 @@ struct reg_code_block {
 	U32 extflags;	/* Flags used both externally and internally */	\
 	SSize_t minlen;	/* mininum possible number of chars in string to match */\
 	SSize_t minlenret; /* mininum possible number of chars in $& */		\
-	STRLEN gofs;	/* chars left of pos that we search from */	\
+	Size_t gofs;	/* chars left of pos that we search from */	\
 	/* substring data about strings that must appear in the */	\
 	/* final match, used for optimisations */			\
 	struct reg_substr_data *substrs;				\
@@ -605,9 +605,9 @@ typedef struct {
     SV      *saved_copy; /* saved saved_copy field from rex */
 #endif
     char    *subbeg;    /* saved subbeg     field from rex */
-    STRLEN  sublen;     /* saved sublen     field from rex */
-    STRLEN  suboffset;  /* saved suboffset  field from rex */
-    STRLEN  subcoffset; /* saved subcoffset field from rex */
+    Size_t  sublen;     /* saved sublen     field from rex */
+    Size_t  suboffset;  /* saved suboffset  field from rex */
+    Size_t  subcoffset; /* saved subcoffset field from rex */
     MAGIC   *pos_magic; /* pos() magic attached to $_ */
     SSize_t pos;        /* the original value of pos() in pos_magic */
     U8      pos_flags;  /* flags to be restored; currently only MGf_BYTES*/
@@ -645,7 +645,7 @@ typedef struct {
     regmatch_info_aux_eval *info_aux_eval; /* extra saved state for (?{}) */
     I32  poscache_maxiter; /* how many whilems todo before S-L cache kicks in */
     I32  poscache_iter;    /* current countdown from _maxiter to zero */
-    STRLEN poscache_size;  /* size of regmatch_info_aux.poscache */
+    Size_t poscache_size;  /* size of regmatch_info_aux.poscache */
     bool intuit;    /* re_intuit_start() is the top-level caller */
     bool is_utf8_pat;    /* regex is utf8 */
     bool is_utf8_target; /* string being matched is utf8 */

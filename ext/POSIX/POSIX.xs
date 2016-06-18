@@ -1659,7 +1659,7 @@ restore_sigmask(pTHX_ SV *osset_sv)
 }
 
 static void *
-allocate_struct(pTHX_ SV *rv, const STRLEN size, const char *packname) {
+allocate_struct(pTHX_ SV *rv, const Size_t size, const char *packname) {
     SV *const t = newSVrv(rv, packname);
     void *const p = sv_grow(t, size + 1);
 
@@ -2855,7 +2855,7 @@ nan(payload = 0)
         }
 #elif defined(c99_nan)
 	{
-	  STRLEN elen = my_snprintf(PL_efloatbuf, PL_efloatsize, "%g", nv);
+	  Size_t elen = my_snprintf(PL_efloatbuf, PL_efloatsize, "%g", nv);
           if ((IV)elen == -1) {
 	    RETVAL = NV_NAN;
           } else {
@@ -3397,9 +3397,9 @@ strxfrm(src)
 	SV *		src
     CODE:
 	{
-          STRLEN srclen;
-          STRLEN dstlen;
-          STRLEN buflen;
+          Size_t srclen;
+          Size_t dstlen;
+          Size_t buflen;
           char *p = SvPV(src,srclen);
           srclen++;
           buflen = srclen * 4 + 1;
@@ -3562,7 +3562,7 @@ strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
             GCC_DIAG_RESTORE;
             sv = sv_newmortal();
 	    if (buf) {
-                STRLEN len = strlen(buf);
+                Size_t len = strlen(buf);
 		sv_usepvn_flags(sv, buf, len, SV_HAS_TRAILING_NUL);
 		if (SvUTF8(fmt)
                     || (! is_invariant_string((U8*) buf, len)

@@ -89,7 +89,7 @@ S_stdize_locale(pTHX_ char *locs)
 	if (t) {
 	    const char * const u = strchr(t, '\n');
 	    if (u && (u[1] == 0)) {
-		const STRLEN len = u - s;
+		const Size_t len = u - s;
 		Move(s + 1, locs, len, char);
 		locs[len] = 0;
 		okay = TRUE;
@@ -655,7 +655,7 @@ Perl_new_collate(pTHX_ const char *newcoll)
                  * least 1.
                  */
                 if (x_len_longer > x_len_shorter) {
-                    PL_collxfrm_mult = (STRLEN) x_len_longer - x_len_shorter;
+                    PL_collxfrm_mult = (Size_t) x_len_longer - x_len_shorter;
                 }
                 else {
                     PL_collxfrm_mult = 1;
@@ -1422,8 +1422,8 @@ Perl_init_i18nl10n(pTHX_ int printwarn)
 
 char *
 Perl__mem_collxfrm(pTHX_ const char *input_string,
-                         STRLEN len,    /* Length of 'input_string' */
-                         STRLEN *xlen,  /* Set to length of returned string
+                         Size_t len,    /* Length of 'input_string' */
+                         Size_t *xlen,  /* Set to length of returned string
                                            (not including the collation index
                                            prefix) */
                          bool utf8      /* Is the input in UTF-8? */
@@ -1440,10 +1440,10 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
 #define COLLXFRM_HDR_LEN    sizeof(PL_collation_ix)
 
     char * s = (char *) input_string;
-    STRLEN s_strlen = strlen(input_string);
+    Size_t s_strlen = strlen(input_string);
     char *xbuf = NULL;
-    STRLEN xAlloc;          /* xalloc is a reserved word in VC */
-    STRLEN length_in_chars;
+    Size_t xAlloc;          /* xalloc is a reserved word in VC */
+    Size_t length_in_chars;
     bool first_time = TRUE; /* Cleared after first loop iteration */
 
     PERL_ARGS_ASSERT__MEM_COLLXFRM;
@@ -1475,7 +1475,7 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
     if (s_strlen < len) {
         char * e = s + len;
         char * sans_nuls;
-        STRLEN cur_min_char_len;
+        Size_t cur_min_char_len;
 
         /* If we don't know what control character sorts lowest for this
          * locale, find it */
@@ -1491,8 +1491,8 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
             /* Look through all legal code points (NUL isn't) */
             for (j = 1; j < 256; j++) {
                 char * x;       /* j's xfrm plus collation index */
-                STRLEN x_len;   /* length of 'x' */
-                STRLEN trial_len = 1;
+                Size_t x_len;   /* length of 'x' */
+                Size_t trial_len = 1;
 
                 /* Create a 1 byte string of the current code point, but with
                  * room to be 2 bytes */
@@ -1548,7 +1548,7 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
             /* Unlikely, but possible, if there aren't any controls in the
              * locale, arbitrarily use \001 */
             if (cur_min_x == NULL) {
-                STRLEN x_len;   /* temporary */
+                Size_t x_len;   /* temporary */
                 cur_min_x = _mem_collxfrm("\001", 1, &x_len,
                                           PL_in_utf8_COLLATE_locale);
                 /* cur_min_cp was already initialized to 1 */
@@ -1657,7 +1657,7 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
                     /* Look through all legal code points (NUL isn't) */
                     for (j = 1; j < 256; j++) {
                         char * x;
-                        STRLEN x_len;
+                        Size_t x_len;
 
                         /* Create a 1-char string of the current code point. */
                         char cur_source[] = { (char) j, '\0' };
@@ -1715,8 +1715,8 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
                 Newx(s, len, char);
 
                 {
-                    STRLEN i;
-                    STRLEN d= 0;
+                    Size_t i;
+                    Size_t d= 0;
 
                     for (i = 0; i < len; i+= UTF8SKIP(t + i)) {
                         U8 cur_char = t[i];
@@ -1776,10 +1776,10 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
              * Modify the coefficients so that we predict a larger value in any
              * future transformations */
             if (! first_time) {
-                STRLEN needed = *xlen + 1;   /* +1 For trailing NUL */
-                STRLEN computed_guess = PL_collxfrm_base
+                Size_t needed = *xlen + 1;   /* +1 For trailing NUL */
+                Size_t computed_guess = PL_collxfrm_base
                                       + (PL_collxfrm_mult * length_in_chars);
-                const STRLEN new_m = needed / length_in_chars;
+                const Size_t new_m = needed / length_in_chars;
 
                 DEBUG_Lv(PerlIO_printf(Perl_debug_log,
                     "%s: %d: initial size of %"UVuf" bytes for a length "
@@ -1792,8 +1792,8 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
                  * change */
                 if (length_in_chars > 1 && new_m  > PL_collxfrm_mult) {
 #ifdef DEBUGGING
-                    STRLEN old_m = PL_collxfrm_mult;
-                    STRLEN old_b = PL_collxfrm_base;
+                    Size_t old_m = PL_collxfrm_mult;
+                    Size_t old_b = PL_collxfrm_base;
 #endif
                     PL_collxfrm_mult = new_m;
                     PL_collxfrm_base = 1;   /* +1 For trailing NUL */
@@ -1811,7 +1811,7 @@ Perl__mem_collxfrm(pTHX_ const char *input_string,
                         (UV) PL_collxfrm_base, (UV) old_b));
                 }
                 else {  /* Slope didn't change, but 'b' did */
-                    const STRLEN new_b = needed
+                    const Size_t new_b = needed
                                         - computed_guess
                                         + PL_collxfrm_base;
                     DEBUG_Lv(PerlIO_printf(Perl_debug_log,
@@ -1921,7 +1921,7 @@ Perl__is_cur_LC_category_utf8(pTHX_ int category)
      * "UTF-8".  It errs on the side of not being a UTF-8 locale. */
 
     char *save_input_locale = NULL;
-    STRLEN final_pos;
+    Size_t final_pos;
 
 #ifdef LC_ALL
     assert(category != LC_ALL);

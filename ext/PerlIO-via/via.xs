@@ -141,7 +141,7 @@ PerlIOVia_pushed(pTHX_ PerlIO * f, const char *mode, SV * arg,
 	    code = -1;
 	}
 	else {
-	    STRLEN pkglen = 0;
+	    Size_t pkglen = 0;
 	    const char *pkg = SvPV(arg, pkglen);
 	    s->obj =
 		newSVpvn(Perl_form(aTHX_ "PerlIO::via::%s", pkg),
@@ -464,7 +464,7 @@ PerlIOVia_fill(pTHX_ PerlIO * f)
 	    s->var = Nullsv;
 	}
 	if (result && SvOK(result)) {
-	    STRLEN len = 0;
+	    Size_t len = 0;
 	    const char *p = SvPV(result, len);
 	    s->var = newSVpvn(p, len);
 	    s->cnt = SvCUR(s->var);

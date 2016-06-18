@@ -449,22 +449,22 @@ the second, C<s2>.  Returns true or false.
 Test two C<NUL>-terminated strings to see if the first, C<s1>, is greater than
 or equal to the second, C<s2>.  Returns true or false.
 
-=for apidoc Am|bool|strnNE|char* s1|char* s2|STRLEN len
+=for apidoc Am|bool|strnNE|char* s1|char* s2|Size_t len
 Test two C<NUL>-terminated strings to see if they are different.  The C<len>
 parameter indicates the number of bytes to compare.  Returns true or false.  (A
 wrapper for C<strncmp>).
 
-=for apidoc Am|bool|strnEQ|char* s1|char* s2|STRLEN len
+=for apidoc Am|bool|strnEQ|char* s1|char* s2|Size_t len
 Test two C<NUL>-terminated strings to see if they are equal.  The C<len>
 parameter indicates the number of bytes to compare.  Returns true or false.  (A
 wrapper for C<strncmp>).
 
-=for apidoc Am|bool|memEQ|char* s1|char* s2|STRLEN len
+=for apidoc Am|bool|memEQ|char* s1|char* s2|Size_t len
 Test two buffers (which may contain embedded C<NUL> characters, to see if they
 are equal.  The C<len> parameter indicates the number of bytes to compare.
 Returns zero if equal, or non-zero if non-equal.
 
-=for apidoc Am|bool|memNE|char* s1|char* s2|STRLEN len
+=for apidoc Am|bool|memNE|char* s1|char* s2|Size_t len
 Test two buffers (which may contain embedded C<NUL> characters, to see if they
 are not equal.  The C<len> parameter indicates the number of bytes to compare.
 Returns zero if non-equal, or non-zero if equal.
@@ -769,7 +769,7 @@ Converts the specified character to uppercase.  If the input is anything but an
 ASCII lowercase character, that input character itself is returned.  Variant
 C<toUPPER_A> is equivalent.
 
-=for apidoc Am|UV|toUPPER_uvchr|UV cp|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toUPPER_uvchr|UV cp|U8* s|Size_t* lenp
 Converts the code point C<cp> to its uppercase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  The code
 point is interpreted as native if less than 256; otherwise as Unicode.  Note
@@ -779,7 +779,7 @@ bytes since the uppercase version may be longer than the original character.
 The first code point of the uppercased version is returned
 (but note, as explained just above, that there may be more.)
 
-=for apidoc Am|UV|toUPPER_utf8|U8* p|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toUPPER_utf8|U8* p|U8* s|Size_t* lenp
 Converts the UTF-8 encoded character at C<p> to its uppercase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  Note
 that the buffer pointed to by C<s> needs to be at least C<UTF8_MAXBYTES_CASE+1>
@@ -796,7 +796,7 @@ ASCII uppercase character, that input character itself is returned.  Variant
 C<toFOLD_A> is equivalent.  (There is no equivalent C<to_FOLD_L1> for the full
 Latin1 range, as the full generality of L</toFOLD_uvchr> is needed there.)
 
-=for apidoc Am|UV|toFOLD_uvchr|UV cp|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toFOLD_uvchr|UV cp|U8* s|Size_t* lenp
 Converts the code point C<cp> to its foldcase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  The code
 point is interpreted as native if less than 256; otherwise as Unicode.  Note
@@ -806,7 +806,7 @@ bytes since the foldcase version may be longer than the original character.
 The first code point of the foldcased version is returned
 (but note, as explained just above, that there may be more.)
 
-=for apidoc Am|UV|toFOLD_utf8|U8* p|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toFOLD_utf8|U8* p|U8* s|Size_t* lenp
 Converts the UTF-8 encoded character at C<p> to its foldcase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  Note
 that the buffer pointed to by C<s> needs to be at least C<UTF8_MAXBYTES_CASE+1>
@@ -830,7 +830,7 @@ undefined if the input doesn't fit in a byte.
 Converts the specified character to lowercase using the current locale's rules,
 if possible; otherwise returns the input character itself.
 
-=for apidoc Am|UV|toLOWER_uvchr|UV cp|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toLOWER_uvchr|UV cp|U8* s|Size_t* lenp
 Converts the code point C<cp> to its lowercase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  The code
 point is interpreted as native if less than 256; otherwise as Unicode.  Note
@@ -840,7 +840,7 @@ bytes since the lowercase version may be longer than the original character.
 The first code point of the lowercased version is returned
 (but note, as explained just above, that there may be more.)
 
-=for apidoc Am|UV|toLOWER_utf8|U8* p|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toLOWER_utf8|U8* p|U8* s|Size_t* lenp
 Converts the UTF-8 encoded character at C<p> to its lowercase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  Note
 that the buffer pointed to by C<s> needs to be at least C<UTF8_MAXBYTES_CASE+1>
@@ -858,7 +858,7 @@ C<toTITLE_A> is equivalent.  (There is no C<toTITLE_L1> for the full Latin1
 range, as the full generality of L</toTITLE_uvchr> is needed there.  Titlecase is
 not a concept used in locale handling, so there is no functionality for that.)
 
-=for apidoc Am|UV|toTITLE_uvchr|UV cp|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toTITLE_uvchr|UV cp|U8* s|Size_t* lenp
 Converts the code point C<cp> to its titlecase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  The code
 point is interpreted as native if less than 256; otherwise as Unicode.  Note
@@ -868,7 +868,7 @@ bytes since the titlecase version may be longer than the original character.
 The first code point of the titlecased version is returned
 (but note, as explained just above, that there may be more.)
 
-=for apidoc Am|UV|toTITLE_utf8|U8* p|U8* s|STRLEN* lenp
+=for apidoc Am|UV|toTITLE_utf8|U8* p|U8* s|Size_t* lenp
 Converts the UTF-8 encoded character at C<p> to its titlecase version, and
 stores that in UTF-8 in C<s>, and its length in bytes in C<lenp>.  Note
 that the buffer pointed to by C<s> needs to be at least C<UTF8_MAXBYTES_CASE+1>
@@ -1950,12 +1950,13 @@ PoisonWith(0xEF) for catching access to freed memory.
 
 =cut */
 
-/* Maintained for backwards-compatibility only. Use newSV() instead. */
 #ifndef PERL_CORE
+/* Maintained for backwards-compatibility only. Use newSV() instead. */
 #define NEWSV(x,len)	newSV(len)
-#endif
 
-#define MEM_SIZE_MAX ((MEM_SIZE)~0)
+/* Maintained for backwards-compatibility only. Use Size_t_MAX instead */
+#define MEM_SIZE_MAX Size_t_MAX
+#endif
 
 
 #ifdef PERL_MALLOC_WRAP
@@ -1967,11 +1968,11 @@ PoisonWith(0xEF) for catching access to freed memory.
  * designed to avoid compiler warnings like:
  *     comparison is always false due to limited range of data type
  * It's mathematically equivalent to
- *    max(n) * sizeof(t) > MEM_SIZE_MAX
+ *    max(n) * sizeof(t) > Size_t_MAX
  */
 
 #  define _MEM_WRAP_NEEDS_RUNTIME_CHECK(n,t) \
-    (8 * sizeof(n) + sizeof(t) > sizeof(MEM_SIZE))
+    (8 * sizeof(n) + sizeof(t) > sizeof(Size_t))
 
 /* This is written in a slightly odd way to avoid various spurious
  * compiler warnings. We *want* to write the expression as
@@ -1991,8 +1992,8 @@ PoisonWith(0xEF) for catching access to freed memory.
  */
 
 #  define _MEM_WRAP_WILL_WRAP(n,t) \
-      ((_MEM_WRAP_NEEDS_RUNTIME_CHECK(n,t) ? (MEM_SIZE)(n) : \
-            MEM_SIZE_MAX/sizeof(t)) > MEM_SIZE_MAX/sizeof(t))
+      ((_MEM_WRAP_NEEDS_RUNTIME_CHECK(n,t) ? (Size_t)(n) : \
+            Size_t_MAX/sizeof(t)) > Size_t_MAX/sizeof(t))
 
 #  define MEM_WRAP_CHECK(n,t) \
 	(void)(UNLIKELY(_MEM_WRAP_WILL_WRAP(n,t)) \
@@ -2004,7 +2005,7 @@ PoisonWith(0xEF) for catching access to freed memory.
 
 #define MEM_WRAP_CHECK_(n,t) MEM_WRAP_CHECK(n,t),
 
-#define PERL_STRLEN_ROUNDUP(n) ((void)(((n) > MEM_SIZE_MAX - 2 * PERL_STRLEN_ROUNDUP_QUANTUM) ? (croak_memory_wrap(),0):0),((n-1+PERL_STRLEN_ROUNDUP_QUANTUM)&~((MEM_SIZE)PERL_STRLEN_ROUNDUP_QUANTUM-1)))
+#define PERL_STRLEN_ROUNDUP(n) ((void)(((n) > Size_t_MAX - 2 * PERL_STRLEN_ROUNDUP_QUANTUM) ? (croak_memory_wrap(),0):0),((n-1+PERL_STRLEN_ROUNDUP_QUANTUM)&~((Size_t)PERL_STRLEN_ROUNDUP_QUANTUM-1)))
 #else
 
 #define MEM_WRAP_CHECK(n,t)
@@ -2012,7 +2013,7 @@ PoisonWith(0xEF) for catching access to freed memory.
 #define MEM_WRAP_CHECK_2(n,t,a,b)
 #define MEM_WRAP_CHECK_(n,t)
 
-#define PERL_STRLEN_ROUNDUP(n) (((n-1+PERL_STRLEN_ROUNDUP_QUANTUM)&~((MEM_SIZE)PERL_STRLEN_ROUNDUP_QUANTUM-1)))
+#define PERL_STRLEN_ROUNDUP(n) (((n-1+PERL_STRLEN_ROUNDUP_QUANTUM)&~((Size_t)PERL_STRLEN_ROUNDUP_QUANTUM-1)))
 
 #endif
 
@@ -2083,8 +2084,8 @@ void Perl_mem_log_del_sv(const SV *sv, const char *filename, const int linenumbe
 #define MEM_LOG_FREE(a)          (a)
 #endif
 
-#define Newx(v,n,t)	(v = (MEM_WRAP_CHECK_(n,t) (t*)MEM_LOG_ALLOC(n,t,safemalloc((MEM_SIZE)((n)*sizeof(t))))))
-#define Newxc(v,n,t,c)	(v = (MEM_WRAP_CHECK_(n,t) (c*)MEM_LOG_ALLOC(n,t,safemalloc((MEM_SIZE)((n)*sizeof(t))))))
+#define Newx(v,n,t)	(v = (MEM_WRAP_CHECK_(n,t) (t*)MEM_LOG_ALLOC(n,t,safemalloc((Size_t)((n)*sizeof(t))))))
+#define Newxc(v,n,t,c)	(v = (MEM_WRAP_CHECK_(n,t) (c*)MEM_LOG_ALLOC(n,t,safemalloc((Size_t)((n)*sizeof(t))))))
 #define Newxz(v,n,t)	(v = (MEM_WRAP_CHECK_(n,t) (t*)MEM_LOG_ALLOC(n,t,safecalloc((n),sizeof(t)))))
 
 #ifndef PERL_CORE
@@ -2095,9 +2096,9 @@ void Perl_mem_log_del_sv(const SV *sv, const char *filename, const int linenumbe
 #endif
 
 #define Renew(v,n,t) \
-	  (v = (MEM_WRAP_CHECK_(n,t) (t*)MEM_LOG_REALLOC(n,t,v,saferealloc((Malloc_t)(v),(MEM_SIZE)((n)*sizeof(t))))))
+	  (v = (MEM_WRAP_CHECK_(n,t) (t*)MEM_LOG_REALLOC(n,t,v,saferealloc((Malloc_t)(v),(Size_t)((n)*sizeof(t))))))
 #define Renewc(v,n,t,c) \
-	  (v = (MEM_WRAP_CHECK_(n,t) (c*)MEM_LOG_REALLOC(n,t,v,saferealloc((Malloc_t)(v),(MEM_SIZE)((n)*sizeof(t))))))
+	  (v = (MEM_WRAP_CHECK_(n,t) (c*)MEM_LOG_REALLOC(n,t,v,saferealloc((Malloc_t)(v),(Size_t)((n)*sizeof(t))))))
 
 #ifdef PERL_POISON
 #define Safefree(d) \

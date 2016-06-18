@@ -51,12 +51,12 @@ The seven routines are:
     SV*  newSViv(IV);
     SV*  newSVuv(UV);
     SV*  newSVnv(double);
-    SV*  newSVpv(const char*, STRLEN);
-    SV*  newSVpvn(const char*, STRLEN);
+    SV*  newSVpv(const char*, Size_t);
+    SV*  newSVpvn(const char*, Size_t);
     SV*  newSVpvf(const char*, ...);
     SV*  newSVsv(SV*);
 
-C<STRLEN> is an integer type (Size_t, usually defined as size_t in
+C<Size_t> is an integer type (Size_t, usually defined as size_t in
 F<config.h>) guaranteed to be large enough to represent the size of
 any string that perl can handle.
 
@@ -76,9 +76,9 @@ To change the value of an I<already-existing> SV, there are eight routines:
     void  sv_setuv(SV*, UV);
     void  sv_setnv(SV*, double);
     void  sv_setpv(SV*, const char*);
-    void  sv_setpvn(SV*, const char*, STRLEN)
+    void  sv_setpvn(SV*, const char*, Size_t)
     void  sv_setpvf(SV*, const char*, ...);
-    void  sv_vsetpvfn(SV*, const char*, STRLEN, va_list *,
+    void  sv_vsetpvfn(SV*, const char*, Size_t, va_list *,
                                                     SV **, I32, bool *);
     void  sv_setsv(SV*, SV*);
 
@@ -118,7 +118,7 @@ To access the actual value that an SV points to, you can use the macros:
     SvIV(SV*)
     SvUV(SV*)
     SvNV(SV*)
-    SvPV(SV*, STRLEN len)
+    SvPV(SV*, Size_t len)
     SvPV_nolen(SV*)
 
 which will automatically coerce the actual scalar type into an IV, UV, double,
@@ -139,7 +139,7 @@ compiler, but it won't work for everyone.
 Break this sort of statement up into separate assignments:
 
     SV *s;
-    STRLEN len;
+    Size_t len;
     char *ptr;
     ptr = SvPV(s, len);
     foo(ptr, len);
@@ -151,7 +151,7 @@ If you want to know if the scalar value is TRUE, you can use:
 Although Perl will automatically grow strings for you, if you need to force
 Perl to allocate more memory for your SV, you can use the macro
 
-    SvGROW(SV*, STRLEN newlen)
+    SvGROW(SV*, Size_t newlen)
 
 which will determine if more memory needs to be allocated.  If so, it will
 call the function C<sv_grow>.  Note that C<SvGROW> can only increase, not
@@ -235,9 +235,9 @@ If you want to append something to the end of string stored in an C<SV*>,
 you can use the following functions:
 
     void  sv_catpv(SV*, const char*);
-    void  sv_catpvn(SV*, const char*, STRLEN);
+    void  sv_catpvn(SV*, const char*, Size_t);
     void  sv_catpvf(SV*, const char*, ...);
-    void  sv_vcatpvfn(SV*, const char*, STRLEN, va_list *, SV **,
+    void  sv_vcatpvfn(SV*, const char*, Size_t, va_list *, SV **,
                                                              I32, bool);
     void  sv_catsv(SV*, SV*);
 
@@ -575,7 +575,7 @@ entries.  Note that the arguments to these macros must be simple
 variables, since they may get evaluated more than once.  See
 L<perlapi> for detailed descriptions of these macros.
 
-    HePV(HE* he, STRLEN len)
+    HePV(HE* he, Size_t len)
     HeVAL(HE* he)
     HeHASH(HE* he)
     HeSVKEY(HE* he)
@@ -731,7 +731,7 @@ Set length to 0 to let Perl calculate the string length.  SV is blessed if
 C<classname> is non-null.
 
     SV* sv_setref_pvn(SV* rv, const char* classname, char* pv,
-                                                         STRLEN length);
+                                                         Size_t length);
 
 The following function tests whether the SV is blessed into the specified
 class.  It does not check inheritance relationships.
@@ -1345,7 +1345,7 @@ based on both its magic type and its magic virtual table:
 Also, if the SV passed to C<mg_find> or C<mg_findext> is not of type
 SVt_PVMG, Perl may core dump.
 
-    int mg_copy(SV* sv, SV* nsv, const char* key, STRLEN klen);
+    int mg_copy(SV* sv, SV* nsv, const char* key, Size_t klen);
 
 This routine checks to see what types of magic C<sv> has.  If the mg_type
 field is an uppercase letter, then the mg_obj is copied to C<nsv>, but
@@ -1669,7 +1669,7 @@ But it also puts the same information in certain fields of the XSUB itself:
 
     HV *stash           = CvSTASH(cv);
     const char *subname = SvPVX(cv);
-    STRLEN name_length  = SvCUR(cv); /* in bytes */
+    Size_t name_length  = SvCUR(cv); /* in bytes */
     U32 is_utf8         = SvUTF8(cv);
 
 C<SvPVX(cv)> contains just the sub name itself, not including the package.
@@ -2858,7 +2858,7 @@ whether the byte is encoded as a single byte even in UTF-8):
     U8 *utf;
     U8 *utf_end; /* 1 beyond buffer pointed to by utf */
     UV uv;	/* Note: a UV, not a U8, not a char */
-    STRLEN len; /* length of character in bytes */
+    Size_t len; /* length of character in bytes */
 
     if (!UTF8_IS_INVARIANT(*utf))
         /* Must treat this as UTF-8 */
@@ -2920,7 +2920,7 @@ manipulating SVs.  More specifically, you cannot expect to do this:
 
     SV *sv;
     SV *nsv;
-    STRLEN len;
+    Size_t len;
     char *p;
 
     p = SvPV(sv, len);

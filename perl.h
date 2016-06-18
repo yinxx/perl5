@@ -902,7 +902,10 @@ EXTERN_C int usleep(unsigned int);
 #define PERL_DEFAULT_DO_EXEC3_IMPLEMENTATION
 #endif
 
+#ifndef PERL_CORE
 #define MEM_SIZE Size_t
+typedef MEM_SIZE STRLEN;
+#endif
 
 /* Round all values passed to malloc up, by default to a multiple of
    sizeof(size_t)
@@ -2594,8 +2597,6 @@ int isnan(double d);
 #    define PERL_QUAD_MIN 	(-PERL_QUAD_MAX - ((3 & -1) == 3))
 
 #endif
-
-typedef MEM_SIZE STRLEN;
 
 typedef struct op OP;
 typedef struct cop COP;
@@ -4595,7 +4596,7 @@ struct perl_memory_debug_header;
 struct perl_memory_debug_header {
   tTHX	interpreter;
 #  if defined(PERL_POISON) || defined(PERL_DEBUG_READONLY_COW)
-  MEM_SIZE size;
+  Size_t size;
 #  endif
   struct perl_memory_debug_header *prev;
   struct perl_memory_debug_header *next;
@@ -4608,7 +4609,7 @@ struct perl_memory_debug_header {
 
 struct perl_memory_debug_header;
 struct perl_memory_debug_header {
-  MEM_SIZE size;
+  Size_t size;
 };
 
 #endif
@@ -5454,7 +5455,7 @@ typedef void (*XSUBADDR_t) (pTHX_ CV *);
 typedef OP* (*Perl_ppaddr_t)(pTHX);
 typedef OP* (*Perl_check_t) (pTHX_ OP*);
 typedef void(*Perl_ophook_t)(pTHX_ OP*);
-typedef int (*Perl_keyword_plugin_t)(pTHX_ char*, STRLEN, OP**);
+typedef int (*Perl_keyword_plugin_t)(pTHX_ char*, Size_t, OP**);
 typedef void(*Perl_cpeep_t)(pTHX_ OP *, OP *);
 
 typedef void(*globhook_t)(pTHX);

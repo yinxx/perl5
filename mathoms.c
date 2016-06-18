@@ -155,7 +155,7 @@ Perl_sv_2nv(pTHX_ SV *sv)
  */
 
 char *
-Perl_sv_2pv(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_2pv(pTHX_ SV *sv, Size_t *lp)
 {
     PERL_ARGS_ASSERT_SV_2PV;
 
@@ -251,7 +251,7 @@ Perl_sv_setsv(pTHX_ SV *dstr, SV *sstr)
  */
 
 void
-Perl_sv_catpvn(pTHX_ SV *dsv, const char* sstr, STRLEN slen)
+Perl_sv_catpvn(pTHX_ SV *dsv, const char* sstr, Size_t slen)
 {
     PERL_ARGS_ASSERT_SV_CATPVN;
 
@@ -267,7 +267,7 @@ Like C<sv_catpvn>, but also handles 'set' magic.
 */
 
 void
-Perl_sv_catpvn_mg(pTHX_ SV *sv, const char *ptr, STRLEN len)
+Perl_sv_catpvn_mg(pTHX_ SV *sv, const char *ptr, Size_t len)
 {
     PERL_ARGS_ASSERT_SV_CATPVN_MG;
 
@@ -379,7 +379,7 @@ cope with complex macro expressions.  Always use the macro instead.
 */
 
 char *
-Perl_sv_pvn(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_pvn(pTHX_ SV *sv, Size_t *lp)
 {
     PERL_ARGS_ASSERT_SV_PVN;
 
@@ -392,7 +392,7 @@ Perl_sv_pvn(pTHX_ SV *sv, STRLEN *lp)
 
 
 char *
-Perl_sv_pvn_nomg(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_pvn_nomg(pTHX_ SV *sv, Size_t *lp)
 {
     PERL_ARGS_ASSERT_SV_PVN_NOMG;
 
@@ -423,7 +423,7 @@ Perl_sv_pv(pTHX_ SV *sv)
  */
 
 char *
-Perl_sv_pvn_force(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_pvn_force(pTHX_ SV *sv, Size_t *lp)
 {
     PERL_ARGS_ASSERT_SV_PVN_FORCE;
 
@@ -458,7 +458,7 @@ instead.
 */
 
 char *
-Perl_sv_pvbyten(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_pvbyten(pTHX_ SV *sv, Size_t *lp)
 {
     PERL_ARGS_ASSERT_SV_PVBYTEN;
 
@@ -494,7 +494,7 @@ instead.
 */
 
 char *
-Perl_sv_pvutf8n(pTHX_ SV *sv, STRLEN *lp)
+Perl_sv_pvutf8n(pTHX_ SV *sv, Size_t *lp)
 {
     PERL_ARGS_ASSERT_SV_PVUTF8N;
 
@@ -506,7 +506,7 @@ Perl_sv_pvutf8n(pTHX_ SV *sv, STRLEN *lp)
  * this function provided for binary compatibility only
  */
 
-STRLEN
+Size_t
 Perl_sv_utf8_upgrade(pTHX_ SV *sv)
 {
     PERL_ARGS_ASSERT_SV_UTF8_UPGRADE;
@@ -690,7 +690,7 @@ Perl_init_i18nl14n(pTHX_ int printwarn)
 }
 
 bool
-Perl_is_utf8_string_loc(const U8 *s, STRLEN len, const U8 **ep)
+Perl_is_utf8_string_loc(const U8 *s, Size_t len, const U8 **ep)
 {
     PERL_ARGS_ASSERT_IS_UTF8_STRING_LOC;
 
@@ -796,7 +796,7 @@ Like C<sv_usepvn>, but also handles 'set' magic.
 */
 
 void
-Perl_sv_usepvn_mg(pTHX_ SV *sv, char *ptr, STRLEN len)
+Perl_sv_usepvn_mg(pTHX_ SV *sv, char *ptr, Size_t len)
 {
     PERL_ARGS_ASSERT_SV_USEPVN_MG;
 
@@ -814,7 +814,7 @@ magic.  See C<L</sv_usepvn_flags>>.
 */
 
 void
-Perl_sv_usepvn(pTHX_ SV *sv, char *ptr, STRLEN len)
+Perl_sv_usepvn(pTHX_ SV *sv, char *ptr, Size_t len)
 {
     PERL_ARGS_ASSERT_SV_USEPVN;
 
@@ -909,7 +909,7 @@ Perl_hv_store_flags(pTHX_ HV *hv, const char *key, I32 klen, SV *val, U32 hash,
 SV**
 Perl_hv_store(pTHX_ HV *hv, const char *key, I32 klen_i32, SV *val, U32 hash)
 {
-    STRLEN klen;
+    Size_t klen;
     int flags;
 
     if (klen_i32 < 0) {
@@ -926,7 +926,7 @@ Perl_hv_store(pTHX_ HV *hv, const char *key, I32 klen_i32, SV *val, U32 hash)
 bool
 Perl_hv_exists(pTHX_ HV *hv, const char *key, I32 klen_i32)
 {
-    STRLEN klen;
+    Size_t klen;
     int flags;
 
     PERL_ARGS_ASSERT_HV_EXISTS;
@@ -945,7 +945,7 @@ Perl_hv_exists(pTHX_ HV *hv, const char *key, I32 klen_i32)
 SV**
 Perl_hv_fetch(pTHX_ HV *hv, const char *key, I32 klen_i32, I32 lval)
 {
-    STRLEN klen;
+    Size_t klen;
     int flags;
 
     PERL_ARGS_ASSERT_HV_FETCH;
@@ -965,7 +965,7 @@ Perl_hv_fetch(pTHX_ HV *hv, const char *key, I32 klen_i32, I32 lval)
 SV *
 Perl_hv_delete(pTHX_ HV *hv, const char *key, I32 klen_i32, I32 flags)
 {
-    STRLEN klen;
+    Size_t klen;
     int k_flags;
 
     PERL_ARGS_ASSERT_HV_DELETE;
@@ -1001,8 +1001,8 @@ Perl_newHV(pTHX)
 }
 
 void
-Perl_sv_insert(pTHX_ SV *const bigstr, const STRLEN offset, const STRLEN len, 
-              const char *const little, const STRLEN littlelen)
+Perl_sv_insert(pTHX_ SV *const bigstr, const Size_t offset, const Size_t len, 
+              const char *const little, const Size_t littlelen)
 {
     PERL_ARGS_ASSERT_SV_INSERT;
     sv_insert_flags(bigstr, offset, len, little, littlelen, SV_GMAGIC);
@@ -1092,13 +1092,13 @@ Perl_sv_eq(pTHX_ SV *sv1, SV *sv2)
 
 #ifdef USE_LOCALE_COLLATE
 char *
-Perl_sv_collxfrm(pTHX_ SV *const sv, STRLEN *const nxp)
+Perl_sv_collxfrm(pTHX_ SV *const sv, Size_t *const nxp)
 {
     return sv_collxfrm_flags(sv, nxp, SV_GMAGIC);
 }
 
 char *
-Perl_mem_collxfrm(pTHX_ const char *input_string, STRLEN len, STRLEN *xlen)
+Perl_mem_collxfrm(pTHX_ const char *input_string, Size_t len, Size_t *xlen)
 {
     /* This function is retained for compatibility in case someone outside core
      * is using this (but it is undocumented) */
@@ -1152,7 +1152,7 @@ Perl_newSUB(pTHX_ I32 floor, OP *o, OP *proto, OP *block)
 }
 
 UV
-Perl_to_utf8_fold(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
+Perl_to_utf8_fold(pTHX_ const U8 *p, U8* ustrp, Size_t *lenp)
 {
     PERL_ARGS_ASSERT_TO_UTF8_FOLD;
 
@@ -1160,7 +1160,7 @@ Perl_to_utf8_fold(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
 }
 
 UV
-Perl_to_utf8_lower(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
+Perl_to_utf8_lower(pTHX_ const U8 *p, U8* ustrp, Size_t *lenp)
 {
     PERL_ARGS_ASSERT_TO_UTF8_LOWER;
 
@@ -1168,7 +1168,7 @@ Perl_to_utf8_lower(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
 }
 
 UV
-Perl_to_utf8_title(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
+Perl_to_utf8_title(pTHX_ const U8 *p, U8* ustrp, Size_t *lenp)
 {
     PERL_ARGS_ASSERT_TO_UTF8_TITLE;
 
@@ -1176,7 +1176,7 @@ Perl_to_utf8_title(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
 }
 
 UV
-Perl_to_utf8_upper(pTHX_ const U8 *p, U8* ustrp, STRLEN *lenp)
+Perl_to_utf8_upper(pTHX_ const U8 *p, U8* ustrp, Size_t *lenp)
 {
     PERL_ARGS_ASSERT_TO_UTF8_UPPER;
 
@@ -1466,7 +1466,7 @@ Perl_to_uni_upper_lc(pTHX_ U32 c)
 {
     /* XXX returns only the first character -- do not use XXX */
     /* XXX no locale support yet */
-    STRLEN len;
+    Size_t len;
     U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
     return (U32)to_uni_upper(c, tmpbuf, &len);
 }
@@ -1476,7 +1476,7 @@ Perl_to_uni_title_lc(pTHX_ U32 c)
 {
     /* XXX returns only the first character XXX -- do not use XXX */
     /* XXX no locale support yet */
-    STRLEN len;
+    Size_t len;
     U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
     return (U32)to_uni_title(c, tmpbuf, &len);
 }
@@ -1486,7 +1486,7 @@ Perl_to_uni_lower_lc(pTHX_ U32 c)
 {
     /* XXX returns only the first character -- do not use XXX */
     /* XXX no locale support yet */
-    STRLEN len;
+    Size_t len;
     U8 tmpbuf[UTF8_MAXBYTES_CASE+1];
     return (U32)to_uni_lower(c, tmpbuf, &len);
 }
@@ -1666,7 +1666,7 @@ instead.
 
 =cut */
 
-STRLEN
+Size_t
 Perl_is_utf8_char(const U8 *s)
 {
     PERL_ARGS_ASSERT_IS_UTF8_CHAR;
@@ -1682,7 +1682,7 @@ This is identical to the macro L</isUTF8_CHAR>.
 
 =cut */
 
-STRLEN
+Size_t
 Perl_is_utf8_char_buf(const U8 *buf, const U8* buf_end)
 {
 
@@ -1697,7 +1697,7 @@ Perl_is_utf8_char_buf(const U8 *buf, const U8* buf_end)
  * non-character code points, and non-Unicode code points are allowed */
 
 UV
-Perl_valid_utf8_to_uvuni(pTHX_ const U8 *s, STRLEN *retlen)
+Perl_valid_utf8_to_uvuni(pTHX_ const U8 *s, Size_t *retlen)
 {
     PERL_ARGS_ASSERT_VALID_UTF8_TO_UVUNI;
 
@@ -1727,7 +1727,7 @@ See L</utf8n_to_uvchr> for details on when the REPLACEMENT CHARACTER is returned
 */
 
 UV
-Perl_utf8_to_uvchr(pTHX_ const U8 *s, STRLEN *retlen)
+Perl_utf8_to_uvchr(pTHX_ const U8 *s, Size_t *retlen)
 {
     PERL_ARGS_ASSERT_UTF8_TO_UVCHR;
 
@@ -1759,7 +1759,7 @@ See L</utf8n_to_uvchr> for details on when the REPLACEMENT CHARACTER is returned
 */
 
 UV
-Perl_utf8_to_uvuni(pTHX_ const U8 *s, STRLEN *retlen)
+Perl_utf8_to_uvuni(pTHX_ const U8 *s, Size_t *retlen)
 {
     PERL_ARGS_ASSERT_UTF8_TO_UVUNI;
 

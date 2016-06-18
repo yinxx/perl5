@@ -207,7 +207,7 @@ Push an SV onto the stack.  The stack must have room for this element.
 Does not handle 'set' magic.  Does not use C<TARG>.  See also
 C<L</PUSHmortal>>, C<L</XPUSHs>>, and C<L</XPUSHmortal>>.
 
-=for apidoc Am|void|PUSHp|char* str|STRLEN len
+=for apidoc Am|void|PUSHp|char* str|Size_t len
 Push a string onto the stack.  The stack must have room for this element.
 The C<len> indicates the length of the string.  Handles 'set' magic.  Uses
 C<TARG>, so C<dTARGET> or C<dXSTARG> should be called to declare it.  Do not
@@ -240,7 +240,7 @@ Push an SV onto the stack, extending the stack if necessary.  Does not
 handle 'set' magic.  Does not use C<TARG>.  See also C<L</XPUSHmortal>>,
 C<PUSHs> and C<PUSHmortal>.
 
-=for apidoc Am|void|XPUSHp|char* str|STRLEN len
+=for apidoc Am|void|XPUSHp|char* str|Size_t len
 Push a string onto the stack, extending the stack if necessary.  The C<len>
 indicates the length of the string.  Handles 'set' magic.  Uses C<TARG>, so
 C<dTARGET> or C<dXSTARG> should be called to declare it.  Do not call
@@ -278,7 +278,7 @@ Push a new mortal SV onto the stack.  The stack must have room for this
 element.  Does not use C<TARG>.  See also C<L</PUSHs>>, C<L</XPUSHmortal>> and
 C<L</XPUSHs>>.
 
-=for apidoc Am|void|mPUSHp|char* str|STRLEN len
+=for apidoc Am|void|mPUSHp|char* str|Size_t len
 Push a string onto the stack.  The stack must have room for this element.
 The C<len> indicates the length of the string.  Does not use C<TARG>.
 See also C<L</PUSHp>>, C<L</mXPUSHp>> and C<L</XPUSHp>>.
@@ -305,7 +305,7 @@ Push a new mortal SV onto the stack, extending the stack if necessary.
 Does not use C<TARG>.  See also C<L</XPUSHs>>, C<L</PUSHmortal>> and
 C<L</PUSHs>>.
 
-=for apidoc Am|void|mXPUSHp|char* str|STRLEN len
+=for apidoc Am|void|mXPUSHp|char* str|Size_t len
 Push a string onto the stack, extending the stack if necessary.  The C<len>
 indicates the length of the string.  Does not use C<TARG>.  See also
 C<L</XPUSHp>>, C<mPUSHp> and C<PUSHp>.

@@ -1462,7 +1462,7 @@ Here is the sample C file:
  load_perl_dll(char *basename)
  {
      char buf[300], fail[260];
-     STRLEN l, dirl;
+     Size_t l, dirl;
      fill_extLibpath_t f;
      ULONG rc_fullname;
      HMODULE handle, handle1;

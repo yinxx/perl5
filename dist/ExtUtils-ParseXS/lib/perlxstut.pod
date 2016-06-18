@@ -1124,7 +1124,7 @@ Mytest.xs:
 	CODE:
 	    for (n = 0; n <= numpaths; n++) {
 		HV * rh;
-		STRLEN l;
+		Size_t l;
 		char * fn = SvPV(*av_fetch((AV *)SvRV(paths), n, 0), l);
 
 		i = statfs(fn, &buf);
