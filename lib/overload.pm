@@ -63,7 +63,7 @@ sub unimport {
   *{$package . "::(("} = \&nil;
   for (@_) {
       warnings::warnif("overload arg '$_' is invalid")
-        unless $ops_seen{$_};
+        unless exists $ops_seen{$_};
       delete $ {$package . "::"}{$_ eq 'fallback' ? '()' : "(" .$_};
   }
 }
