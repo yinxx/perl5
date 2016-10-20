@@ -17,7 +17,7 @@ sub array_diff {
 
 #######################################################################
 
-use Test::More tests => 7;  # some extra tests in t/lib/BaseInc*
+use Test::More tests => 8;  # some extra tests in t/lib/BaseInc*
 
 use lib 't/lib', sub {()};
 
@@ -34,6 +34,8 @@ BEGIN {
     ok !$success, 'loading optional modules from . fails';
     is_deeply \@INC, \@expected, '... without changes to @INC'
         or diag array_diff [@INC], [@expected];
+    like $err, qr!Base class package "t::lib::Dummy" is not empty but "t/lib/Dummy\.pm" exists in the current directory\.!,
+        '... and the proper error message';
 }
 
 BEGIN { @BaseIncOptional::ISA = () } # make it look like an optional load
