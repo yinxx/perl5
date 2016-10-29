@@ -1,8 +1,9 @@
 package BaseIncOptional;
 
 BEGIN { package main;
-    isnt $INC[-1], '.', 'no trailing dot in @INC during optional module load from base';
-    is 0+(grep ref eq 'CODE', @INC), 2, '... but the expected dummy hook';
+    is $INC[-1], '.', 'trailing dot remains in @INC during optional module load from base';
+    ok eval('require t::lib::Dummy'), '... and modules load fine from .' or diag "$@";
+    delete $INC{'t/lib/Dummy.pm'};
 }
 
 use lib 't/lib/on-head';
