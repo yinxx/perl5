@@ -1,9 +1,9 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 6;  # some extra tests in t/lib/BaseInc*
+use Test::More tests => 8;  # some extra tests in t/lib/BaseInc*
 
-use lib 't/lib';
+use lib 't/lib', sub {()};
 
 # make it look like an older perl
 BEGIN { push @INC, '.' if $INC[-1] ne '.' }
