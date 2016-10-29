@@ -17,7 +17,7 @@ sub array_diff {
 
 #######################################################################
 
-use Test::More tests => 5;  # some extra tests in t/lib/BaseInc*
+use Test::More tests => 7;  # some extra tests in t/lib/BaseInc*
 
 use lib 't/lib', sub {()};
 
@@ -27,6 +27,14 @@ BEGIN { push @INC, '.' if $INC[-1] ne '.' }
 my @expected; BEGIN { @expected = @INC }
 
 use base 'BaseIncMandatory';
+
+BEGIN {
+    @t::lib::Dummy::ISA = (); # make it look like an optional load
+    my $success = eval q{use base 't::lib::Dummy'}, my $err = $@;
+    ok !$success, 'loading optional modules from . fails';
+    is_deeply \@INC, \@expected, '... without changes to @INC'
+        or diag array_diff [@INC], [@expected];
+}
 
 BEGIN { @BaseIncOptional::ISA = () } # make it look like an optional load
 use base 'BaseIncOptional';
