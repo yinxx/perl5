@@ -15,7 +15,7 @@ BEGIN {
 
 use Config;
 
-plan tests => 138;
+plan tests => 139;
 
 # run some code N times. If the number of SVs at the end of loop N is
 # greater than (N-1)*delta at the end of loop 1, we've got a leak
@@ -559,4 +559,16 @@ EOF
     my $b = 'aa';
     sub f { $a =~ /[^.]+$b/; }
     ::leak(2, 0, \&f, q{use re 'strict' shouldn't leak warning strings});
+}
+
+# dying while compiling a regex with codeblocks imported from an embedded
+# qr// could leak
+
+{
+    my sub codeblocks {
+        my $r = qr/(?{ 1; })/;
+        my $c = '(?{ 2; })';
+        eval { /$r$c/ }
+    }
+    ::leak(2, 0, \&codeblocks, q{leaking embedded qr codeblocks});
 }
