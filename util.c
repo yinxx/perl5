@@ -1877,6 +1877,7 @@ paths reduces CPU cache pressure.
 void
 Perl_croak_no_modify(void)
 {
+    assert(0);
     Perl_croak_nocontext( "%s", PL_no_modify);
 }
 
