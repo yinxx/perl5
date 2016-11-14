@@ -81,6 +81,7 @@ POD = perl.pod	\
 	perldebtut.pod	\
 	perldebug.pod	\
 	perldelta.pod	\
+	perldeprecation.pod	\
 	perldiag.pod	\
 	perldsc.pod	\
 	perldtrace.pod	\
@@ -228,6 +229,7 @@ MAN = perl.man	\
 	perldebtut.man	\
 	perldebug.man	\
 	perldelta.man	\
+	perldeprecation.man	\
 	perldiag.man	\
 	perldsc.man	\
 	perldtrace.man	\
@@ -375,6 +377,7 @@ HTML = perl.html	\
 	perldebtut.html	\
 	perldebug.html	\
 	perldelta.html	\
+	perldeprecation.html	\
 	perldiag.html	\
 	perldsc.html	\
 	perldtrace.html	\
@@ -522,6 +525,7 @@ TEX = perl.tex	\
 	perldebtut.tex	\
 	perldebug.tex	\
 	perldelta.tex	\
+	perldeprecation.tex	\
 	perldiag.tex	\
 	perldsc.tex	\
 	perldtrace.tex	\
