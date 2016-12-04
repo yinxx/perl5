@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 use warnings::register;
-our $VERSION = '1.34';
+our $VERSION = '1.35';
 require Exporter;
 require Cwd;
 
@@ -14,6 +14,7 @@ our @EXPORT = qw(find finddepth);
 use strict;
 my $Is_VMS;
 my $Is_Win32;
+my $Is_Microsoft_WSL;
 
 require File::Basename;
 require File::Spec;
@@ -770,21 +771,32 @@ sub finddepth {
 $File::Find::skip_pattern    = qr/^\.{1,2}\z/;
 $File::Find::untaint_pattern = qr|^([-+@\w./]+)$|;
 
-# These are hard-coded for now, but may move to hint files.
-if ($^O eq 'VMS') {
-    $Is_VMS = 1;
-    $File::Find::dont_use_nlink = 1;
-}
-elsif ($^O eq 'MSWin32') {
-    $Is_Win32 = 1;
-}
-
 # this _should_ work properly on all platforms
 # where File::Find can be expected to work
 $File::Find::current_dir = File::Spec->curdir || '.';
 
+sub _microsoft_wsl_check {
+    return 0 unless $^O eq 'linux';
+    open my $pv, '<', '/proc/version' or die "Can't open < /proc/version: $!";
+    # Expecting /proc/version to look like this:
+    # Linux version 3.4.0-Microsoft (Microsoft@Microsoft.com) (gcc version 4.7 (GCC) ) #1 SMP PREEMPT Wed Dec 31 14:42:53 PST 2014
+    my $lv = <$pv>;
+
+    # If we locate either 'Microsoft' or 'WSL' (Windows Subsystem for Linux)
+    # in the string, we infer that we are on WSL.  See:
+    # https://msdn.microsoft.com/en-us/commandline/wsl/about
+
+    return 1 if (index($lv,'Microsoft') != -1 || index($lv,'WSL') != -1);
+    return 0;
+}
+
+$Is_VMS             = 1 if ($^O eq 'VMS');
+$Is_Win32           = 1 if ($^O eq 'MSWin32');
+$Is_Microsoft_WSL   = 1 if _microsoft_wsl_check();
+
 $File::Find::dont_use_nlink = 1
-    if $^O eq 'os2' || $^O eq 'dos' || $^O eq 'amigaos' || $Is_Win32 ||
+    if $^O eq 'os2' || $^O eq 'dos' || $^O eq 'amigaos' ||
+       $Is_Win32 || $Is_VMS || $Is_Microsoft_WSL ||
        $^O eq 'interix' || $^O eq 'cygwin' || $^O eq 'qnx' || $^O eq 'nto';
 
 # Set dont_use_nlink in your hint file if your system's stat doesn't
