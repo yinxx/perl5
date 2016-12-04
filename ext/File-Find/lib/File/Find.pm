@@ -777,16 +777,17 @@ $File::Find::current_dir = File::Spec->curdir || '.';
 
 sub _microsoft_wsl_check {
     return 0 unless $^O eq 'linux';
-    open my $pv, '<', '/proc/version' or die "Can't open < /proc/version: $!";
-    # Expecting /proc/version to look like this:
-    # Linux version 3.4.0-Microsoft (Microsoft@Microsoft.com) (gcc version 4.7 (GCC) ) #1 SMP PREEMPT Wed Dec 31 14:42:53 PST 2014
-    my $lv = <$pv>;
+    if (open my $pv, '<', '/proc/version') {
+        # Expecting /proc/version to look like this:
+        # Linux version 3.4.0-Microsoft (Microsoft@Microsoft.com) (gcc version 4.7 (GCC) ) #1 SMP PREEMPT Wed Dec 31 14:42:53 PST 2014
+        my $lv = <$pv>;
 
-    # If we locate either 'Microsoft' or 'WSL' (Windows Subsystem for Linux)
-    # in the string, we infer that we are on WSL.  See:
-    # https://msdn.microsoft.com/en-us/commandline/wsl/about
+        # If we locate either 'Microsoft' or 'WSL' (Windows Subsystem for Linux)
+        # in the string, we infer that we are on WSL.  See:
+        # https://msdn.microsoft.com/en-us/commandline/wsl/about
 
-    return 1 if (index($lv,'Microsoft') != -1 || index($lv,'WSL') != -1);
+        return 1 if (index($lv,'Microsoft') != -1 || index($lv,'WSL') != -1);
+    }
     return 0;
 }
 
