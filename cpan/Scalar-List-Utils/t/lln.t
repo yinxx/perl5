@@ -3,20 +3,22 @@
 use strict;
 use warnings;
 
-use Test::More tests => 19;
+use Test::More tests => 22;
 use Scalar::Util qw(looks_like_number);
 
 foreach my $num (qw(1 -1 +1 1.0 +1.0 -1.0 -1.0e-12)) {
   ok(looks_like_number($num), "'$num'");
 }
-
 SKIP: {
     my $vax_float = (pack("d",1) =~ /^[\x80\x10]\x40/);
     skip("VAX does not have inf/nan", 3) if $vax_float;
-    is(!!looks_like_number("Inf"),	    $] >= 5.006001,	'Inf');
-    is(!!looks_like_number("Infinity"), $] >= 5.008,	'Infinity');
-    is(!!looks_like_number("NaN"),	    $] >= 5.008,	'NaN');
+    is(!!looks_like_number("Inf"),     $] >= 5.006001, 'Inf');
+    is(!!looks_like_number("Infinity"), $] >= 5.008,   'Infinity');
+    is(!!looks_like_number("NaN"),     $] >= 5.008,    'NaN');
 }
+is(!!looks_like_number("Inf"),	    $] >= 5.006001,	'Inf');
+is(!!looks_like_number("Infinity"), $] >= 5.008,	'Infinity');
+is(!!looks_like_number("NaN"),	    $] >= 5.008,	'NaN');
 is(!!looks_like_number("foo"),	    '',			'foo');
 is(!!looks_like_number(undef),	    '',           	'undef');
 is(!!looks_like_number({}),	    '',			'HASH Ref');
