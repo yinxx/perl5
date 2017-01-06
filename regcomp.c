@@ -803,6 +803,12 @@ static const scan_data_t zero_scan_data =
                                           a1, REPORT_LOCATION_ARGS(loc));   \
 } STMT_END
 
+#define	vWARN2(loc, m, a1) STMT_START {				            \
+    __ASSERT_(PASS2) Perl_warner(aTHX_ packWARN(WARN_REGEXP),               \
+                                       m REPORT_LOCATION,                   \
+	                               a1, REPORT_LOCATION_ARGS(loc));      \
+} STMT_END
+
 #define	vWARN3(loc, m, a1, a2) STMT_START {				    \
     __ASSERT_(PASS2) Perl_warner(aTHX_ packWARN(WARN_REGEXP),               \
                                        m REPORT_LOCATION,                   \
