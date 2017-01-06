@@ -13378,6 +13378,12 @@ S_regatom(pTHX_ RExC_state_t *pRExC_state, I32 *flagp, U32 depth)
                         RExC_parse = p + 1;
 			vFAIL("Unescaped left brace in regex is illegal here");
 		    }
+		    goto normal_default;
+                case '}':
+                case ']':
+                    if (PASS2 && p > RExC_parse && RExC_strict) {
+                        vWARN2(p + 1, "Unescaped literal '%c'", *p);
+                    }
 		    /*FALLTHROUGH*/
 		default:    /* A literal character */
 		  normal_default:

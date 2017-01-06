@@ -6335,6 +6335,22 @@ as the first character following a quantifier
 
 =back
 
+=item Unescaped literal '%c' in regex; marked by <-- HERE in m/%s/
+
+(W regexp) (only under C<S<use re 'strict'>>)>)
+
+You included a C<}> or C<]> which were interpreted literally.  These
+characters are sometimes literals and sometimes metacharacters,
+depending on what preceeds them in the pattern, perhaps a long ways
+earlier.  This is unlike the similcar C<)> which is always a
+metacharacter unless escaped.  When a pattern is compiled within the
+scope of C<S<use re 'strict'>>, this warning is generated when either of
+these two characters is treated as a literal, making them behave more
+like C<)>.  If you meant them as literals, simply precede them with a
+backslash or make them into a bracketed character class (like C<[}]>).
+If you meant them as closing a corresponding C<[> or C<{>, you'll need
+to look back through the pattern to find out why that isn't happening.
+
 =item unexec of %s into %s failed!
 
 (F) The unexec() routine failed for some reason.  See your local FSF
